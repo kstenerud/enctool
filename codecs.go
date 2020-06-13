@@ -21,9 +21,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"reflect"
 	"sort"
 
 	"github.com/kstenerud/go-concise-encoding"
@@ -71,6 +73,8 @@ func init() {
 	knownEncoders["cbe"] = encodeCBE
 	knownDecoders["cte"] = decodeCTE
 	knownEncoders["cte"] = encodeCTE
+	knownDecoders["json"] = decodeJSON
+	knownEncoders["json"] = encodeJSON
 	addCommand(new(cmdConvert))
 }
 
@@ -84,16 +88,6 @@ func decodeCBE(reader io.Reader) (result interface{}, err error) {
 	}
 
 	result, err = concise_encoding.UnmarshalCBE(document, result, nil)
-	return
-}
-
-func decodeCTE(reader io.Reader) (result interface{}, err error) {
-	document, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return
-	}
-
-	result, err = concise_encoding.UnmarshalCTE(document, result, nil)
 	return
 }
 
@@ -111,6 +105,16 @@ func encodeCBE(value interface{}, writer io.Writer) (err error) {
 	return
 }
 
+func decodeCTE(reader io.Reader) (result interface{}, err error) {
+	document, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return
+	}
+
+	result, err = concise_encoding.UnmarshalCTE(document, result, nil)
+	return
+}
+
 func encodeCTE(value interface{}, writer io.Writer) (err error) {
 	options := &concise_encoding.CTEMarshalerOptions{
 		Iterator: concise_encoding.IteratorOptions{
@@ -123,4 +127,42 @@ func encodeCTE(value interface{}, writer io.Writer) (err error) {
 	}
 	_, err = writer.Write(document)
 	return
+}
+
+func decodeJSON(reader io.Reader) (result interface{}, err error) {
+	document, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return
+	}
+
+	v := make(map[string]interface{})
+
+	err = json.Unmarshal(document, &v)
+	result = v
+	return
+}
+
+func encodeJSON(value interface{}, writer io.Writer) (err error) {
+	value = coerceToJSONable(value)
+	document, err := json.Marshal(value)
+	if err != nil {
+		return
+	}
+	_, err = writer.Write(document)
+	return
+}
+
+func coerceToJSONable(value interface{}) interface{} {
+	rv := reflect.ValueOf(value)
+	if rv.Kind() == reflect.Map && rv.Type().Key().Kind() != reflect.String {
+		newMap := make(map[string]interface{})
+		iter := rv.MapRange()
+		for iter.Next() {
+			k := fmt.Sprintf("%v", iter.Key())
+			v := coerceToJSONable(iter.Value().Interface())
+			newMap[k] = v
+		}
+		value = newMap
+	}
+	return value
 }
