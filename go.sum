@@ -1,0 +1,17 @@
+github.com/cockroachdb/apd/v2 v2.0.1 h1:y1Rh3tEU89D+7Tgbw+lp52T6p/GJLpDmNvr10UWqLTE=
+github.com/cockroachdb/apd/v2 v2.0.1/go.mod h1:DDxRlzC2lo3/vSlmSoS7JkqbbrARPuFOGr0B9pvN3Gw=
+github.com/kstenerud/go-compact-float v1.4.7 h1:0SBrmQ/l+w7RPDgxWpOaiaQs2fT3YXcMz7sCTDvVLYM=
+github.com/kstenerud/go-compact-float v1.4.7/go.mod h1:L9bVnWPbz4zUB8wXFXN9RQfvkSt/KlAUcLj2H+73EiU=
+github.com/kstenerud/go-compact-time v1.3.5 h1:VFIruOmJ9dzXzTXGcBakOl9ERFuKn58L4DR1iZyy1U4=
+github.com/kstenerud/go-compact-time v1.3.5/go.mod h1:BLFAONzS2YG4qLf/mwn6UBtAztxkBH7f/z8hT/I1dUo=
+github.com/kstenerud/go-concise-encoding v0.0.0-20200613133827-b61504fca0e0 h1:XCToGCgVDLibwd13bpkled5ptXZfBFMMTQpzbcCy68A=
+github.com/kstenerud/go-concise-encoding v0.0.0-20200613133827-b61504fca0e0/go.mod h1:2CHwsCw+57PuMWss2VWGsk+V+HiG7pVWynxqKJS/q10=
+github.com/kstenerud/go-describe v1.2.9 h1:p3ZQ2l4t1LiekUfYw7qIxvgUibCjEvm7LmSs9jfsJLo=
+github.com/kstenerud/go-describe v1.2.9/go.mod h1:iE3AFLH5Mbb3f0OAoQqTn2Ao1bOJN66kjxiMWHFQuAU=
+github.com/kstenerud/go-duplicates v1.0.3 h1:ZSkVFer/fxLT84T5GuE/pfiqBnHr3E8DHcfKL5DilFk=
+github.com/kstenerud/go-duplicates v1.0.3/go.mod h1:OoPQ8B7sw/LFlPpLJT6bbCrHdOtaC9yWBF1uZXqOoxw=
+github.com/kstenerud/go-equivalence v1.0.2/go.mod h1:xw3yeUgIlLDXrdQAckQjyHUEYo/2f8JsX3muajxRubM=
+github.com/kstenerud/go-uleb128 v1.0.2 h1:wcs6leEX9Zs2shpQ663AgB8lOHF7QBIbstIlXz00FUU=
+github.com/kstenerud/go-uleb128 v1.0.2/go.mod h1:ddOvZ5nlw5Trm6QHlpLRZknStSXIzvD6DVymaBL+iMg=
+github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
+github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
