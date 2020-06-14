@@ -128,6 +128,9 @@ func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err 
 		Iterator: concise_encoding.IteratorOptions{
 			UseReferences: true,
 		},
+		Encoder: concise_encoding.CTEEncoderOptions{
+			Indent: strings.Repeat(" ", config.indentSpaces),
+		},
 	}
 	document, err := concise_encoding.MarshalCTE(value, options)
 	if err != nil {

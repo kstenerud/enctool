@@ -2,9 +2,11 @@ module enctool
 
 go 1.13
 
-//replace github.com/kstenerud/go-concise-encoding => ../go-concise-encoding
+// replace github.com/kstenerud/go-concise-encoding => ../go-concise-encoding
 
 require (
-	github.com/kstenerud/go-concise-encoding v0.0.0-20200613133827-b61504fca0e0
+	github.com/cockroachdb/apd v1.1.0 // indirect
+	github.com/kstenerud/go-concise-encoding v0.0.0-20200614050540-a23e6ca38fd5
 	github.com/kstenerud/go-describe v1.2.9
+	github.com/lib/pq v1.7.0 // indirect
 )
