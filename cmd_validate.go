@@ -50,7 +50,7 @@ func (this *cmdValidate) Init(args []string) (err error) {
 		return usageError("%v", err)
 	}
 
-	srcFile, err := fields.getRequiredString("f", "File (- for stdin)")
+	srcFile, err := fields.getRequiredString("f", "File")
 	if err != nil {
 		return
 	}
@@ -76,7 +76,7 @@ func (this *cmdValidate) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("validate", flag.ContinueOnError)
 	fields["fmt"] = fs.String("fmt", "", "File format (required)")
-	fields["f"] = fs.String("f", "", "File to read from (required)")
+	fields["f"] = fs.String("f", "", "File to read from (- for stdin) (required)")
 
 	return
 }

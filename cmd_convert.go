@@ -57,11 +57,11 @@ func (this *cmdConvert) Init(args []string) (err error) {
 		return usageError("%v", err)
 	}
 
-	srcFile, err := fields.getRequiredString("s", "Source file (- for stdin)")
+	srcFile, err := fields.getRequiredString("s", "Source file")
 	if err != nil {
 		return
 	}
-	dstFile, err := fields.getRequiredString("d", "Destination file (- for stdout)")
+	dstFile, err := fields.getRequiredString("d", "Destination file")
 	if err != nil {
 		return
 	}
@@ -99,8 +99,8 @@ func (this *cmdConvert) Init(args []string) (err error) {
 func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("convert", flag.ContinueOnError)
-	fields["sf"] = fs.String("sf", "", "The source format to convert from (required)")
-	fields["df"] = fs.String("df", "", "The destination format to convert to (required)")
+	fields["sf"] = fs.String("sf", "", "The source format to convert from (- for stdin) (required)")
+	fields["df"] = fs.String("df", "", "The destination format to convert to (- for stdout) (required)")
 	fields["s"] = fs.String("s", "", "The source file to read from (required)")
 	fields["d"] = fs.String("d", "", "The destination file to write to (required)")
 	fields["i"] = fs.Uint("i", 0, "Indentation to use")
