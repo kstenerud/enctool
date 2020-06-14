@@ -22,6 +22,7 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -75,6 +76,8 @@ func init() {
 	knownEncoders["cte"] = encodeCTE
 	knownDecoders["json"] = decodeJSON
 	knownEncoders["json"] = encodeJSON
+	knownDecoders["xml"] = decodeXML
+	knownEncoders["xml"] = encodeXML
 	addCommand(new(cmdConvert))
 }
 
@@ -165,4 +168,90 @@ func coerceToJSONable(value interface{}) interface{} {
 		value = newMap
 	}
 	return value
+}
+
+func decodeXML(reader io.Reader) (result interface{}, err error) {
+	document, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return
+	}
+
+	v := make(map[string]interface{})
+
+	err = xml.Unmarshal(document, &v)
+	result = v
+	return
+}
+
+func encodeXML(value interface{}, writer io.Writer) (err error) {
+	value = coerceToXMLable(value)
+	document, err := xml.Marshal(value)
+	if err != nil {
+		return
+	}
+	_, err = writer.Write(document)
+	return
+}
+
+func coerceToXMLable(value interface{}) interface{} {
+	rv := reflect.ValueOf(value)
+	switch rv.Kind() {
+	case reflect.String:
+		return value
+	case reflect.Slice:
+		if rv.Type().Elem().Kind() == reflect.String {
+			return value
+		}
+		newSlice := make([]string, 0, rv.Len())
+		for i := 0; i < rv.Len(); i++ {
+			elem := rv.Index(i)
+			if elem.Kind() == reflect.String {
+				newSlice = append(newSlice, elem.String())
+			} else {
+				newSlice = append(newSlice, fmt.Sprintf("%v", elem.Interface()))
+			}
+		}
+		return newSlice
+	case reflect.Map:
+		if rv.Type().Key().Kind() == reflect.String && rv.Type().Elem().Kind() == reflect.String {
+			return value
+		}
+		newMap := make(XMLStringMap)
+		iter := rv.MapRange()
+		for iter.Next() {
+			k := iter.Key()
+			v := iter.Value()
+			if k.Kind() != reflect.String {
+				k = reflect.ValueOf(fmt.Sprintf("%v", k.Interface()))
+			}
+			if v.Kind() != reflect.String {
+				v = reflect.ValueOf(coerceToXMLable(v.Interface()))
+			}
+			newMap[k.String()] = v.String()
+		}
+		return newMap
+	default:
+		return fmt.Sprintf("%v", rv)
+	}
+}
+
+type XMLStringMap map[string]string
+
+func (this XMLStringMap) MarshalXML(e *xml.Encoder, start xml.StartElement) (err error) {
+	tokens := []xml.Token{start}
+
+	for k, v := range this {
+		t := xml.StartElement{Name: xml.Name{"", k}}
+		tokens = append(tokens, t, xml.CharData(v), xml.EndElement{t.Name})
+	}
+
+	tokens = append(tokens, xml.EndElement{start.Name})
+
+	for _, t := range tokens {
+		if err = e.EncodeToken(t); err != nil {
+			return
+		}
+	}
+
+	return e.Flush()
 }
