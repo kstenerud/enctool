@@ -28,9 +28,14 @@ import (
 	"io/ioutil"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/kstenerud/go-concise-encoding"
 )
+
+type encoderConfig struct {
+	indentSpaces int
+}
 
 func getKnownEncoders() []string {
 	keys := make([]string, 0, len(knownEncoders))
@@ -82,7 +87,7 @@ func init() {
 }
 
 type decoder func(io.Reader) (interface{}, error)
-type encoder func(interface{}, io.Writer) error
+type encoder func(interface{}, io.Writer, *encoderConfig) error
 
 func decodeCBE(reader io.Reader) (result interface{}, err error) {
 	document, err := ioutil.ReadAll(reader)
@@ -94,7 +99,7 @@ func decodeCBE(reader io.Reader) (result interface{}, err error) {
 	return
 }
 
-func encodeCBE(value interface{}, writer io.Writer) (err error) {
+func encodeCBE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	options := &concise_encoding.CBEMarshalerOptions{
 		Iterator: concise_encoding.IteratorOptions{
 			UseReferences: true,
@@ -118,7 +123,7 @@ func decodeCTE(reader io.Reader) (result interface{}, err error) {
 	return
 }
 
-func encodeCTE(value interface{}, writer io.Writer) (err error) {
+func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	options := &concise_encoding.CTEMarshalerOptions{
 		Iterator: concise_encoding.IteratorOptions{
 			UseReferences: true,
@@ -145,16 +150,28 @@ func decodeJSON(reader io.Reader) (result interface{}, err error) {
 	return
 }
 
-func encodeJSON(value interface{}, writer io.Writer) (err error) {
+func encodeJSON(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	value = coerceToJSONable(value)
-	document, err := json.Marshal(value)
-	if err != nil {
-		return
+	var document []byte
+
+	if config.indentSpaces == 0 {
+		document, err = json.Marshal(value)
+		if err != nil {
+			return
+		}
+	} else {
+		indent := strings.Repeat(" ", config.indentSpaces)
+		document, err = json.MarshalIndent(value, "", indent)
+		if err != nil {
+			return
+		}
 	}
+
 	_, err = writer.Write(document)
 	return
 }
 
+// TODO: This needs tests
 func coerceToJSONable(value interface{}) interface{} {
 	rv := reflect.ValueOf(value)
 	if rv.Kind() == reflect.Map && rv.Type().Key().Kind() != reflect.String {
@@ -183,16 +200,27 @@ func decodeXML(reader io.Reader) (result interface{}, err error) {
 	return
 }
 
-func encodeXML(value interface{}, writer io.Writer) (err error) {
+func encodeXML(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	value = coerceToXMLable(value)
-	document, err := xml.Marshal(value)
-	if err != nil {
-		return
+	var document []byte
+
+	if config.indentSpaces == 0 {
+		document, err = xml.Marshal(value)
+		if err != nil {
+			return
+		}
+	} else {
+		indent := strings.Repeat(" ", config.indentSpaces)
+		document, err = xml.MarshalIndent(value, "", indent)
+		if err != nil {
+			return
+		}
 	}
 	_, err = writer.Write(document)
 	return
 }
 
+// TODO: This needs tests
 func coerceToXMLable(value interface{}) interface{} {
 	rv := reflect.ValueOf(value)
 	switch rv.Kind() {

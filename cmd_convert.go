@@ -26,10 +26,11 @@ import (
 )
 
 type cmdConvert struct {
-	srcReader io.Reader
-	dstWriter io.Writer
-	encode    encoder
-	decode    decoder
+	srcReader     io.Reader
+	dstWriter     io.Writer
+	encode        encoder
+	decode        decoder
+	encoderConfig encoderConfig
 }
 
 func (this *cmdConvert) Name() string { return "convert" }
@@ -46,7 +47,7 @@ func (this *cmdConvert) Run() (err error) {
 	if err != nil {
 		return
 	}
-	err = this.encode(v, this.dstWriter)
+	err = this.encode(v, this.dstWriter, &this.encoderConfig)
 	return
 }
 
@@ -72,6 +73,8 @@ func (this *cmdConvert) Init(args []string) (err error) {
 	if err != nil {
 		return
 	}
+
+	this.encoderConfig.indentSpaces = int(fields.getUint("i"))
 
 	this.decode, err = getDecoder(srcFormat)
 	if err != nil {
@@ -100,6 +103,7 @@ func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields["df"] = fs.String("df", "", "The destination format to convert to (required)")
 	fields["s"] = fs.String("s", "", "The source file to read from (required)")
 	fields["d"] = fs.String("d", "", "The destination file to write to (required)")
+	fields["i"] = fs.Uint("i", 0, "Indentation to use")
 
 	return
 }

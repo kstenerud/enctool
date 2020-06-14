@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 )
 
 func getFlagsUsage(fs *flag.FlagSet) string {
@@ -95,7 +96,7 @@ func (this fieldValues) getUint(id string) uint {
 	field := this[id]
 	v, ok := field.(*uint)
 	if !ok {
-		panic(fmt.Errorf("BUG: Expected %v to contain a string, but contains %v", id, field))
+		panic(fmt.Errorf("BUG: Expected %v to contain a uint, but contains %v (%v)", id, field, reflect.TypeOf(field)))
 	}
 	return *v
 }
