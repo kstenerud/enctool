@@ -23,11 +23,13 @@ package main
 import (
 	"flag"
 	"io"
+	"strings"
 )
 
 type cmdConvert struct {
 	srcReader     io.Reader
 	dstWriter     io.Writer
+	converter     converter
 	encode        encoder
 	decode        decoder
 	encoderConfig encoderConfig
@@ -43,11 +45,7 @@ func (this *cmdConvert) Usage() string {
 }
 
 func (this *cmdConvert) Run() (err error) {
-	v, err := this.decode(this.srcReader)
-	if err != nil {
-		return
-	}
-	err = this.encode(v, this.dstWriter, &this.encoderConfig)
+	err = this.converter(this.srcReader, this.dstWriter, &this.encoderConfig)
 	return
 }
 
@@ -76,12 +74,9 @@ func (this *cmdConvert) Init(args []string) (err error) {
 
 	this.encoderConfig.indentSpaces = int(fields.getUint("i"))
 
-	this.decode, err = getDecoder(srcFormat)
-	if err != nil {
-		return err
-	}
+	converterID := strings.ToLower(srcFormat) + "-" + strings.ToLower(dstFormat)
 
-	this.encode, err = getEncoder(dstFormat)
+	this.converter, err = getConverter(converterID)
 	if err != nil {
 		return err
 	}

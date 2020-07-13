@@ -30,7 +30,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding"
+	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 type encoderConfig struct {
@@ -90,53 +92,35 @@ type decoder func(io.Reader) (interface{}, error)
 type encoder func(interface{}, io.Writer, *encoderConfig) error
 
 func decodeCBE(reader io.Reader) (result interface{}, err error) {
-	document, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return
-	}
-
-	result, err = concise_encoding.UnmarshalCBE(document, result, nil)
+	result, err = cbe.Unmarshal(reader, result, nil)
 	return
 }
 
 func encodeCBE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	options := &concise_encoding.CBEMarshalerOptions{
-		Iterator: concise_encoding.IteratorOptions{
+	options := &options.CBEMarshalerOptions{
+		Iterator: options.IteratorOptions{
 			UseReferences: true,
 		},
 	}
-	document, err := concise_encoding.MarshalCBE(value, options)
-	if err != nil {
-		return
-	}
-	_, err = writer.Write(document)
+	err = cbe.Marshal(value, writer, options)
 	return
 }
 
 func decodeCTE(reader io.Reader) (result interface{}, err error) {
-	document, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return
-	}
-
-	result, err = concise_encoding.UnmarshalCTE(document, result, nil)
+	result, err = cte.Unmarshal(reader, result, nil)
 	return
 }
 
 func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	options := &concise_encoding.CTEMarshalerOptions{
-		Iterator: concise_encoding.IteratorOptions{
+	options := &options.CTEMarshalerOptions{
+		Iterator: options.IteratorOptions{
 			UseReferences: true,
 		},
-		Encoder: concise_encoding.CTEEncoderOptions{
+		Encoder: options.CTEEncoderOptions{
 			Indent: strings.Repeat(" ", config.indentSpaces),
 		},
 	}
-	document, err := concise_encoding.MarshalCTE(value, options)
-	if err != nil {
-		return
-	}
-	_, err = writer.Write(document)
+	err = cte.Marshal(value, writer, options)
 	return
 }
 
