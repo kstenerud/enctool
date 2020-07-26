@@ -25,8 +25,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
-
-	"github.com/kstenerud/go-concise-encoding/debug"
+	// "github.com/kstenerud/go-concise-encoding/debug"
 )
 
 func printUsage(cmd Command) {
