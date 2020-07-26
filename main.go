@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"os"
 	"sort"
+
+	"github.com/kstenerud/go-concise-encoding/debug"
 )
 
 func printUsage(cmd Command) {
@@ -56,6 +58,7 @@ func printHelpExit() {
 }
 
 func main() {
+	// debug.DebugOptions.PassThroughPanics = true
 	args := os.Args
 	if len(args) < 2 {
 		printUsageExit(nil)

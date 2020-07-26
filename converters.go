@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 
+	"github.com/kstenerud/go-concise-encoding/options"
+
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/rules"
@@ -30,22 +32,22 @@ func getConverter(id string) (converter, error) {
 }
 
 func CBEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := cbe.DefaultDecoderOptions()
-	encoderOpts := cte.DefaultEncoderOptions()
+	decoderOpts := options.DefaultCBEDecoderOptions()
+	encoderOpts := options.DefaultCTEEncoderOptions()
 	encoderOpts.Indent = generateSpaces(config.indentSpaces)
-	rulesOpts := rules.DefaultRuleOptions()
+	rulesOpts := options.DefaultRuleOptions()
 	encoder := cte.NewEncoder(out, encoderOpts)
-	rules := rules.NewRules(rulesOpts, encoder)
+	rules := rules.NewRules(encoder, rulesOpts)
 	decoder := cbe.NewDecoder(in, rules, decoderOpts)
 	return decoder.Decode()
 }
 
 func CTEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := cte.DefaultDecoderOptions()
-	encoderOpts := cbe.DefaultEncoderOptions()
-	rulesOpts := rules.DefaultRuleOptions()
+	decoderOpts := options.DefaultCTEDecoderOptions()
+	encoderOpts := options.DefaultCBEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
 	encoder := cbe.NewEncoder(out, encoderOpts)
-	rules := rules.NewRules(rulesOpts, encoder)
+	rules := rules.NewRules(encoder, rulesOpts)
 	decoder := cte.NewDecoder(in, rules, decoderOpts)
 	return decoder.Decode()
 }
