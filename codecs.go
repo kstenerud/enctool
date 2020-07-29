@@ -97,12 +97,7 @@ func decodeCBE(reader io.Reader) (result interface{}, err error) {
 }
 
 func encodeCBE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	options := &options.CBEMarshalerOptions{
-		Iterator: options.IteratorOptions{
-			UseReferences: true,
-		},
-	}
-	err = cbe.Marshal(value, writer, options)
+	err = cbe.Marshal(value, writer, nil)
 	return
 }
 
@@ -112,15 +107,9 @@ func decodeCTE(reader io.Reader) (result interface{}, err error) {
 }
 
 func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	options := &options.CTEMarshalerOptions{
-		Iterator: options.IteratorOptions{
-			UseReferences: true,
-		},
-		Encoder: options.CTEEncoderOptions{
-			Indent: strings.Repeat(" ", config.indentSpaces),
-		},
-	}
-	err = cte.Marshal(value, writer, options)
+	opts := options.DefaultCTEMarshalerOptions()
+	opts.Encoder.Indent = strings.Repeat(" ", config.indentSpaces)
+	err = cte.Marshal(value, writer, opts)
 	return
 }
 
