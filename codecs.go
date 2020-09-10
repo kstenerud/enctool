@@ -30,8 +30,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/cbe"
-	"github.com/kstenerud/go-concise-encoding/cte"
+	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/options"
 )
 
@@ -92,24 +91,24 @@ type decoder func(io.Reader) (interface{}, error)
 type encoder func(interface{}, io.Writer, *encoderConfig) error
 
 func decodeCBE(reader io.Reader) (result interface{}, err error) {
-	result, err = cbe.Unmarshal(reader, result, nil)
+	result, err = ce.UnmarshalCBE(reader, result, nil)
 	return
 }
 
 func encodeCBE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	err = cbe.Marshal(value, writer, nil)
+	err = ce.MarshalCBE(value, writer, nil)
 	return
 }
 
 func decodeCTE(reader io.Reader) (result interface{}, err error) {
-	result, err = cte.Unmarshal(reader, result, nil)
+	result, err = ce.UnmarshalCTE(reader, result, nil)
 	return
 }
 
 func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	opts := options.DefaultCTEMarshalerOptions()
 	opts.Encoder.Indent = strings.Repeat(" ", config.indentSpaces)
-	err = cte.Marshal(value, writer, opts)
+	err = ce.MarshalCTE(value, writer, opts)
 	return
 }
 

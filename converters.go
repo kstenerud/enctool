@@ -36,20 +36,22 @@ func CBEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
 	encoderOpts := options.DefaultCTEEncoderOptions()
 	encoderOpts.Indent = generateSpaces(config.indentSpaces)
 	rulesOpts := options.DefaultRuleOptions()
-	encoder := cte.NewEncoder(out, encoderOpts)
+	encoder := cte.NewEncoder(encoderOpts)
 	rules := rules.NewRules(encoder, rulesOpts)
-	decoder := cbe.NewDecoder(in, rules, decoderOpts)
-	return decoder.Decode()
+	decoder := cbe.NewDecoder(decoderOpts)
+	encoder.PrepareToEncode(out)
+	return decoder.Decode(in, rules)
 }
 
 func CTEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
 	decoderOpts := options.DefaultCTEDecoderOptions()
 	encoderOpts := options.DefaultCBEEncoderOptions()
 	rulesOpts := options.DefaultRuleOptions()
-	encoder := cbe.NewEncoder(out, encoderOpts)
+	encoder := cbe.NewEncoder(encoderOpts)
 	rules := rules.NewRules(encoder, rulesOpts)
-	decoder := cte.NewDecoder(in, rules, decoderOpts)
-	return decoder.Decode()
+	decoder := cte.NewDecoder(decoderOpts)
+	encoder.PrepareToEncode(out)
+	return decoder.Decode(in, rules)
 }
 
 func JSONToCBE(in io.Reader, out io.Writer, config *encoderConfig) (err error) {
