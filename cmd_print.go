@@ -21,6 +21,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -48,7 +49,11 @@ func (this *cmdPrint) Run() (err error) {
 	if err != nil {
 		return
 	}
-	fmt.Println(describe.Describe(v, int(this.indent)))
+	if v == nil {
+		fmt.Println("<nil>")
+	} else {
+		fmt.Println(describe.Describe(v, int(this.indent)))
+	}
 	return
 }
 
@@ -58,23 +63,36 @@ func (this *cmdPrint) Init(args []string) (err error) {
 		return usageError("%v", err)
 	}
 
-	srcFile, err := fields.getRequiredString("f", "File")
+	srcFile, err := fields.getString("f", "File")
 	if err != nil {
 		return
 	}
-	srcFormat, err := fields.getRequiredString("fmt", "Format")
+	if srcFile == "" {
+		srcFile = "-"
+	}
+
+	srcFormat, err := fields.getString("fmt", "Format")
 	if err != nil {
 		return
+	}
+
+	this.srcReader, err = openFileRead(srcFile)
+	if err != nil {
+		return err
+	}
+
+	if len(srcFormat) == 0 {
+		bufReader := bufio.NewReader(this.srcReader)
+		this.srcReader = bufReader
+		srcFormat, err = detectSrcFormat(bufReader)
+		if err != nil {
+			return err
+		}
 	}
 
 	this.indent = fields.getUint("i")
 
 	this.decode, err = getDecoder(srcFormat)
-	if err != nil {
-		return err
-	}
-
-	this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
 		return err
 	}
@@ -85,8 +103,8 @@ func (this *cmdPrint) Init(args []string) (err error) {
 func (this *cmdPrint) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("print", flag.ContinueOnError)
-	fields["fmt"] = fs.String("fmt", "", "File format (required)")
-	fields["f"] = fs.String("f", "", "File to read from (- for stdin) (required)")
+	fields["fmt"] = fs.String("fmt", "", "File format (auto-detected if not specified)")
+	fields["f"] = fs.String("f", "", "File to read from (- for stdin) (defaults to stdin)")
 	fields["i"] = fs.Uint("i", 0, "Indentation (spaces)")
 
 	return
