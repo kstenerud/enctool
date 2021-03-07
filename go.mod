@@ -3,6 +3,6 @@ module enctool
 go 1.13
 
 require (
-	github.com/kstenerud/go-concise-encoding v0.0.0-20210101113350-755491c09321
+	github.com/kstenerud/go-concise-encoding v0.0.0-20210307060304-bdc34f1e0aa2
 	github.com/kstenerud/go-describe v1.2.13
 )
