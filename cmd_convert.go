@@ -21,6 +21,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"io"
 	"strings"
@@ -55,15 +56,23 @@ func (this *cmdConvert) Init(args []string) (err error) {
 		return usageError("%v", err)
 	}
 
-	srcFile, err := fields.getRequiredString("s", "Source file")
+	srcFile, err := fields.getString("s", "Source file")
 	if err != nil {
 		return
 	}
-	dstFile, err := fields.getRequiredString("d", "Destination file")
+	if srcFile == "" {
+		srcFile = "-"
+	}
+
+	dstFile, err := fields.getString("d", "Destination file")
 	if err != nil {
 		return
 	}
-	srcFormat, err := fields.getRequiredString("sf", "Source format")
+	if dstFile == "" {
+		dstFile = "-"
+	}
+
+	srcFormat, err := fields.getString("sf", "Source format")
 	if err != nil {
 		return
 	}
@@ -74,14 +83,23 @@ func (this *cmdConvert) Init(args []string) (err error) {
 
 	this.encoderConfig.indentSpaces = int(fields.getUint("i"))
 
-	converterID := strings.ToLower(srcFormat) + "-" + strings.ToLower(dstFormat)
-
-	this.converter, err = getConverter(converterID)
+	this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
 		return err
 	}
 
-	this.srcReader, err = openFileRead(srcFile)
+	if len(srcFormat) == 0 {
+		bufReader := bufio.NewReader(this.srcReader)
+		this.srcReader = bufReader
+		srcFormat, err = detectSrcFormat(bufReader)
+		if err != nil {
+			return err
+		}
+	}
+
+	converterID := strings.ToLower(srcFormat) + "-" + strings.ToLower(dstFormat)
+
+	this.converter, err = getConverter(converterID)
 	if err != nil {
 		return err
 	}
@@ -94,10 +112,10 @@ func (this *cmdConvert) Init(args []string) (err error) {
 func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("convert", flag.ContinueOnError)
-	fields["sf"] = fs.String("sf", "", "The source format to convert from (- for stdin) (required)")
-	fields["df"] = fs.String("df", "", "The destination format to convert to (- for stdout) (required)")
-	fields["s"] = fs.String("s", "", "The source file to read from (required)")
-	fields["d"] = fs.String("d", "", "The destination file to write to (required)")
+	fields["sf"] = fs.String("sf", "", "The source format to convert from (auto-detected if not specified)")
+	fields["df"] = fs.String("df", "", "The destination format to convert to (required)")
+	fields["s"] = fs.String("s", "", "The source file to read from (- for stdin) (defaults to stdin)")
+	fields["d"] = fs.String("d", "", "The destination file to write to (- for stdout) (defaults to stdout)")
 	fields["i"] = fs.Uint("i", 0, "Indentation to use")
 
 	return

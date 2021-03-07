@@ -21,6 +21,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"io"
 )
@@ -50,21 +51,34 @@ func (this *cmdValidate) Init(args []string) (err error) {
 		return usageError("%v", err)
 	}
 
-	srcFile, err := fields.getRequiredString("f", "File")
+	srcFile, err := fields.getString("f", "File")
 	if err != nil {
 		return
 	}
-	srcFormat, err := fields.getRequiredString("fmt", "Format")
+	if srcFile == "" {
+		srcFile = "-"
+	}
+
+	srcFormat, err := fields.getString("fmt", "Format")
 	if err != nil {
 		return
 	}
 
-	this.decode, err = getDecoder(srcFormat)
+	this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
 		return err
 	}
 
-	this.srcReader, err = openFileRead(srcFile)
+	if len(srcFormat) == 0 {
+		bufReader := bufio.NewReader(this.srcReader)
+		this.srcReader = bufReader
+		srcFormat, err = detectSrcFormat(bufReader)
+		if err != nil {
+			return err
+		}
+	}
+
+	this.decode, err = getDecoder(srcFormat)
 	if err != nil {
 		return err
 	}
@@ -75,8 +89,8 @@ func (this *cmdValidate) Init(args []string) (err error) {
 func (this *cmdValidate) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("validate", flag.ContinueOnError)
-	fields["fmt"] = fs.String("fmt", "", "File format (required)")
-	fields["f"] = fs.String("f", "", "File to read from (- for stdin) (required)")
+	fields["fmt"] = fs.String("fmt", "", "File format (auto-detected if not specified)")
+	fields["f"] = fs.String("f", "", "File to read from (- for stdin) (defaults to stdin)")
 
 	return
 }

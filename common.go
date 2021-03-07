@@ -21,6 +21,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
@@ -92,6 +93,18 @@ func (this fieldValues) getRequiredString(id string, name string) (string, error
 	return value, nil
 }
 
+func (this fieldValues) getString(id string, name string) (string, error) {
+	field, ok := this[id]
+	if !ok {
+		return "", nil
+	}
+	v, ok := field.(*string)
+	if !ok {
+		panic(fmt.Errorf("BUG: Expected %v to contain a string, but contains %v", id, field))
+	}
+	return *v, nil
+}
+
 func (this fieldValues) getUint(id string) uint {
 	field := this[id]
 	v, ok := field.(*uint)
@@ -99,4 +112,19 @@ func (this fieldValues) getUint(id string) uint {
 		panic(fmt.Errorf("BUG: Expected %v to contain a uint, but contains %v (%v)", id, field, reflect.TypeOf(field)))
 	}
 	return *v
+}
+
+func detectSrcFormat(reader *bufio.Reader) (string, error) {
+	begin, err := reader.Peek(1)
+	if err != nil {
+		return "", err
+	}
+	switch begin[0] {
+	case 'c':
+		return "cte", nil
+	case 0x03:
+		return "cbe", nil
+	default:
+		return "json", nil
+	}
 }
