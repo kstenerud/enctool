@@ -47,6 +47,8 @@ Available commands:
     formats   : Print a list of supported formats
     print     : Print a document's structure.
     validate  : Validate a document.
+
+Use -h after a command to get a list of options.
 ```
 
 Convert a [CTE](https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md) document to [CBE](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md):

@@ -41,6 +41,7 @@ func printUsage(cmd Command) {
 			cmd := commands[k]
 			fmt.Printf("    %-10v: %v\n", k, cmd.Description())
 		}
+		fmt.Printf("\nUse -h after a command to get a list of options.\n")
 	} else {
 		fmt.Println(cmd.Usage())
 	}
