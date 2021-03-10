@@ -4,8 +4,8 @@ github.com/kstenerud/go-compact-float v1.4.9 h1:edgjKUOyYiYVpu9G/0FWMbdF5O2Q4XZZ
 github.com/kstenerud/go-compact-float v1.4.9/go.mod h1:LzoeDjjlurS6MUg4cvoyxiHhtwe/zucRc+F11tlH3ZU=
 github.com/kstenerud/go-compact-time v1.6.0 h1:bYRSmbE03/YBznF716qJ92jiMGL1LGkFzO1TIl3MwAk=
 github.com/kstenerud/go-compact-time v1.6.0/go.mod h1:W6pqmbnsuIoeUudQEEH//SIrdhxVaJ4ZSyjfaqJFBCc=
-github.com/kstenerud/go-concise-encoding v0.0.0-20210308073914-3e1fec94b48a h1:YLzmv70mjGbJzR3CDFkoBppBAnK84JaQJ9q0ZFUqkh4=
-github.com/kstenerud/go-concise-encoding v0.0.0-20210308073914-3e1fec94b48a/go.mod h1:2Nen/g26Rihs1YroyhSfcrYUca9JlSK0ETKOa0Df1Pk=
+github.com/kstenerud/go-concise-encoding v0.0.0-20210310171911-672edaae7c7f h1:MNhkSjzqu+5Q5u7l4CTbuh0NfEvnCSgEN5K5IJcqqHE=
+github.com/kstenerud/go-concise-encoding v0.0.0-20210310171911-672edaae7c7f/go.mod h1:2Nen/g26Rihs1YroyhSfcrYUca9JlSK0ETKOa0Df1Pk=
 github.com/kstenerud/go-concise-encoding/codegen v0.0.0-20210121064501-e8f008488627/go.mod h1:Q34ooeyWE2VGiFdpWq7274Nad6EIrhRpZ7M/k98GV2Q=
 github.com/kstenerud/go-describe v1.2.13 h1:3EazEwS/oNw0uMGQt45UvuxNNVEjR65dkAoy3CtiQN8=
 github.com/kstenerud/go-describe v1.2.13/go.mod h1:+B7K/fXHhObqwmMhcUT0CPT68fR1SQ9XNmJ5E4ck2RI=
