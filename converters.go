@@ -15,12 +15,15 @@ import (
 type converter func(io.Reader, io.Writer, *encoderConfig) error
 
 var knownConverters = map[string]converter{
-	"cbe-cte":  CBEToCTE,
-	"cbe-json": CBEToJSON,
-	"cte-cbe":  CTEToCBE,
-	"cte-json": CTEToJSON,
-	"json-cbe": JSONToCBE,
-	"json-cte": JSONToCTE,
+	"cbe-cbe":   CBEToCBE,
+	"cbe-cte":   CBEToCTE,
+	"cbe-json":  CBEToJSON,
+	"cte-cte":   CTEToCTE,
+	"cte-cbe":   CTEToCBE,
+	"cte-json":  CTEToJSON,
+	"json-json": JSONToJSON,
+	"json-cbe":  JSONToCBE,
+	"json-cte":  JSONToCTE,
 }
 
 func getConverter(id string) (converter, error) {
@@ -31,6 +34,17 @@ func getConverter(id string) (converter, error) {
 	return converter, nil
 }
 
+func CBEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
+	decoderOpts := options.DefaultCBEDecoderOptions()
+	encoderOpts := options.DefaultCBEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
+	encoder := cbe.NewEncoder(encoderOpts)
+	rules := rules.NewRules(encoder, rulesOpts)
+	decoder := cbe.NewDecoder(decoderOpts)
+	encoder.PrepareToEncode(out)
+	return decoder.Decode(in, rules)
+}
+
 func CBEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
 	decoderOpts := options.DefaultCBEDecoderOptions()
 	encoderOpts := options.DefaultCTEEncoderOptions()
@@ -39,6 +53,17 @@ func CBEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
 	encoder := cte.NewEncoder(encoderOpts)
 	rules := rules.NewRules(encoder, rulesOpts)
 	decoder := cbe.NewDecoder(decoderOpts)
+	encoder.PrepareToEncode(out)
+	return decoder.Decode(in, rules)
+}
+
+func CTEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
+	decoderOpts := options.DefaultCTEDecoderOptions()
+	encoderOpts := options.DefaultCTEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
+	encoder := cte.NewEncoder(encoderOpts)
+	rules := rules.NewRules(encoder, rulesOpts)
+	decoder := cte.NewDecoder(decoderOpts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(in, rules)
 }
@@ -60,6 +85,15 @@ func JSONToCBE(in io.Reader, out io.Writer, config *encoderConfig) (err error) {
 		return
 	}
 	err = encodeCBE(object, out, config)
+	return
+}
+
+func JSONToJSON(in io.Reader, out io.Writer, config *encoderConfig) (err error) {
+	object, err := decodeJSON(in)
+	if err != nil {
+		return
+	}
+	err = encodeJSON(object, out, config)
 	return
 }
 
