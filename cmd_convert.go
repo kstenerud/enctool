@@ -89,6 +89,13 @@ func (this *cmdConvert) Init(args []string) (err error) {
 		return fmt.Errorf("Cannot choose modes -x and -t simultaneously")
 	}
 
+	shouldWriteHexValues := fields.getBool("X")
+	shouldWriteCValues := fields.getBool("C")
+
+	if shouldWriteHexValues && shouldWriteCValues {
+		return fmt.Errorf("Cannot choose modes -X and -C simultaneously")
+	}
+
 	this.encoderConfig.indentSpaces = int(fields.getUint("i"))
 
 	this.srcReader, err = openFileRead(srcFile)
@@ -118,6 +125,11 @@ func (this *cmdConvert) Init(args []string) (err error) {
 	}
 
 	this.dstWriter, err = openFileWrite(dstFile)
+	if shouldWriteHexValues {
+		this.dstWriter = newHexWriter(this.dstWriter)
+	} else if shouldWriteCValues {
+		this.dstWriter = newCWriter(this.dstWriter)
+	}
 
 	return
 }
@@ -132,6 +144,8 @@ func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields["i"] = fs.Uint("i", 0, "Indentation to use")
 	fields["t"] = fs.Bool("t", false, "Interpret source as text-encoded byte values (can be decimal numbers or 0xff style hex, separated by non-numeric chars)")
 	fields["x"] = fs.Bool("x", false, "Interpret source as text hex-encoded byte values (2 digits per byte), separated by non-numeric chars")
+	fields["X"] = fs.Bool("X", false, "write destination as text hex-encoded byte values (2 digits per byte), separated a space")
+	fields["C"] = fs.Bool("C", false, "write destination as C-style byte values (in the format '0xab, 0xcd, ...')")
 
 	return
 }

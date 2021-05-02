@@ -25,6 +25,77 @@ import (
 	"io"
 )
 
+type CWriter struct {
+	writer      io.Writer
+	isFirstbyte bool
+	buff        [6]byte // , 0x00
+}
+
+func newCWriter(writer io.Writer) io.Writer {
+	this := &CWriter{
+		writer:      writer,
+		isFirstbyte: true,
+	}
+	this.buff[0] = ','
+	this.buff[1] = ' '
+	this.buff[2] = '0'
+	this.buff[3] = 'x'
+	return this
+}
+
+func (this *CWriter) Write(p []byte) (n int, err error) {
+	for i := 0; i < len(p); i++ {
+		b := p[i]
+		this.buff[4] = hexChars[b>>4]
+		this.buff[5] = hexChars[b&15]
+		buff := this.buff[:]
+		if this.isFirstbyte {
+			buff = buff[2:]
+			this.isFirstbyte = false
+		}
+		if _, err = this.writer.Write(buff); err != nil {
+			return
+		}
+		n++
+	}
+	return
+}
+
+type HexWriter struct {
+	writer      io.Writer
+	isFirstbyte bool
+	buff        [3]byte
+}
+
+var hexChars = [16]byte{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'}
+
+func newHexWriter(writer io.Writer) io.Writer {
+	this := &HexWriter{
+		writer:      writer,
+		isFirstbyte: true,
+	}
+	this.buff[0] = ' '
+	return this
+}
+
+func (this *HexWriter) Write(p []byte) (n int, err error) {
+	for i := 0; i < len(p); i++ {
+		b := p[i]
+		this.buff[1] = hexChars[b>>4]
+		this.buff[2] = hexChars[b&15]
+		buff := this.buff[:]
+		if this.isFirstbyte {
+			buff = buff[1:]
+			this.isFirstbyte = false
+		}
+		if _, err = this.writer.Write(buff); err != nil {
+			return
+		}
+		n++
+	}
+	return
+}
+
 func newHexReader(reader io.Reader) io.Reader {
 	return &HexReader{
 		TokenReader{
