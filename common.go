@@ -58,7 +58,7 @@ func openFileRead(path string) (io.Reader, error) {
 
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Error opening %v: %v", path, err)
 	}
 	return f, nil
 }
@@ -70,7 +70,7 @@ func openFileWrite(path string) (io.Writer, error) {
 
 	f, err := os.Create(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Error opening %v: %v", path, err)
 	}
 	return f, nil
 }
@@ -110,6 +110,15 @@ func (this fieldValues) getUint(id string) uint {
 	v, ok := field.(*uint)
 	if !ok {
 		panic(fmt.Errorf("BUG: Expected %v to contain a uint, but contains %v (%v)", id, field, reflect.TypeOf(field)))
+	}
+	return *v
+}
+
+func (this fieldValues) getBool(id string) bool {
+	field := this[id]
+	v, ok := field.(*bool)
+	if !ok {
+		panic(fmt.Errorf("BUG: Expected %v to contain a bool, but contains %v (%v)", id, field, reflect.TypeOf(field)))
 	}
 	return *v
 }

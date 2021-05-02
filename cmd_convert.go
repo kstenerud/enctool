@@ -23,6 +23,7 @@ package main
 import (
 	"bufio"
 	"flag"
+	"fmt"
 	"io"
 	"strings"
 )
@@ -81,11 +82,23 @@ func (this *cmdConvert) Init(args []string) (err error) {
 		return
 	}
 
+	shouldDecodeHex := fields.getBool("x")
+	shouldDecodeText := fields.getBool("t")
+
+	if shouldDecodeHex && shouldDecodeText {
+		return fmt.Errorf("Cannot choose modes -x and -t simultaneously")
+	}
+
 	this.encoderConfig.indentSpaces = int(fields.getUint("i"))
 
 	this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error opening %v: %v", srcFile, err)
+	}
+	if shouldDecodeHex {
+		this.srcReader = newHexReader(this.srcReader)
+	} else if shouldDecodeText {
+		this.srcReader = newTextByteReader(this.srcReader)
 	}
 
 	if len(srcFormat) == 0 {
@@ -93,7 +106,7 @@ func (this *cmdConvert) Init(args []string) (err error) {
 		this.srcReader = bufReader
 		srcFormat, err = detectSrcFormat(bufReader)
 		if err != nil {
-			return err
+			return fmt.Errorf("Error detecting source format of %v: %v", srcFile, err)
 		}
 	}
 
@@ -117,6 +130,8 @@ func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields["s"] = fs.String("s", "", "The source file to read from (- for stdin) (defaults to stdin)")
 	fields["d"] = fs.String("d", "", "The destination file to write to (- for stdout) (defaults to stdout)")
 	fields["i"] = fs.Uint("i", 0, "Indentation to use")
+	fields["t"] = fs.Bool("t", false, "Interpret source as text-encoded byte values (can be decimal numbers or 0xff style hex, separated by non-numeric chars)")
+	fields["x"] = fs.Bool("x", false, "Interpret source as text hex-encoded byte values (2 digits per byte), separated by non-numeric chars")
 
 	return
 }

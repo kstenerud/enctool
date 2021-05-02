@@ -63,6 +63,23 @@ Print a document's contents using 4 spaces indentation:
 enctool print -f=document.cbe -fmt=cbe -i=4
 ```
 
+Enctool's convert mode also supports interpreting input as text-encoded byte values, using `-x` for hex encoded, or the more general `-t` which supports decimal format and `0xff` style hex. For example:
+
+```
+$ echo "03 00 ff" | ./enctool convert -x -sf cbe -df cte
+c0
+-1
+$ echo "0x03, 0x00, 0xff" | ./enctool convert -t -sf cbe -df cte
+c0
+-1
+$ echo "3, 0, 255" | ./enctool convert -t -sf cbe -df cte
+c0
+-1
+$ echo "3 0 0xff" | ./enctool convert -t -sf cbe -df cte
+c0
+-1
+```
+
 
 License
 -------
