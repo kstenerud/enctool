@@ -82,18 +82,32 @@ func (this *cmdConvert) Init(args []string) (err error) {
 		return
 	}
 
-	shouldDecodeHex := fields.getBool("x")
-	shouldDecodeText := fields.getBool("t")
-
-	if shouldDecodeHex && shouldDecodeText {
-		return fmt.Errorf("Cannot choose modes -x and -t simultaneously")
+	readAdapter := readAdapterNone
+	if fields.getBool("x") {
+		readAdapter = readAdapterHex
+	}
+	if fields.getBool("t") {
+		if readAdapter != readAdapterNone {
+			return fmt.Errorf("Cannot choose modes -x and -t simultaneously")
+		}
+		readAdapter = readAdapterText
 	}
 
-	shouldWriteHexValues := fields.getBool("X")
-	shouldWriteCValues := fields.getBool("C")
-
-	if shouldWriteHexValues && shouldWriteCValues {
-		return fmt.Errorf("Cannot choose modes -X and -C simultaneously")
+	writeAdapter := writeAdapterNone
+	if fields.getBool("X") {
+		writeAdapter = writeAdapterHex
+	}
+	if fields.getBool("C") {
+		if writeAdapter != writeAdapterNone {
+			return fmt.Errorf("Cannot choose more than one of -X -C -S simultaneously")
+		}
+		writeAdapter = writeAdapterC
+	}
+	if fields.getBool("S") {
+		if writeAdapter != writeAdapterNone {
+			return fmt.Errorf("Cannot choose more than one of -X -C -S simultaneously")
+		}
+		writeAdapter = writeAdapterStringify
 	}
 
 	this.encoderConfig.indentSpaces = int(fields.getUint("i"))
@@ -102,9 +116,10 @@ func (this *cmdConvert) Init(args []string) (err error) {
 	if err != nil {
 		return fmt.Errorf("Error opening %v: %v", srcFile, err)
 	}
-	if shouldDecodeHex {
+	switch readAdapter {
+	case readAdapterHex:
 		this.srcReader = newHexReader(this.srcReader)
-	} else if shouldDecodeText {
+	case readAdapterText:
 		this.srcReader = newTextByteReader(this.srcReader)
 	}
 
@@ -125,10 +140,13 @@ func (this *cmdConvert) Init(args []string) (err error) {
 	}
 
 	this.dstWriter, err = openFileWrite(dstFile)
-	if shouldWriteHexValues {
-		this.dstWriter = newHexWriter(this.dstWriter)
-	} else if shouldWriteCValues {
+	switch writeAdapter {
+	case writeAdapterC:
 		this.dstWriter = newCWriter(this.dstWriter)
+	case writeAdapterHex:
+		this.dstWriter = newHexWriter(this.dstWriter)
+	case writeAdapterStringify:
+		this.dstWriter = newStringifyWriter(this.dstWriter)
 	}
 
 	return
@@ -146,6 +164,7 @@ func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields["x"] = fs.Bool("x", false, "Interpret source as text hex-encoded byte values (2 digits per byte), separated by non-numeric chars")
 	fields["X"] = fs.Bool("X", false, "write destination as text hex-encoded byte values (2 digits per byte), separated a space")
 	fields["C"] = fs.Bool("C", false, "write destination as C-style byte values (in the format '0xab, 0xcd, ...')")
+	fields["S"] = fs.Bool("S", false, "write destination as stringified (escapes \" and \\ characters)")
 
 	return
 }
@@ -153,3 +172,20 @@ func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 func init() {
 	addCommand(new(cmdConvert))
 }
+
+type readAdapter int
+
+const (
+	readAdapterNone = iota
+	readAdapterHex
+	readAdapterText
+)
+
+type writeAdapter int
+
+const (
+	writeAdapterNone = iota
+	writeAdapterHex
+	writeAdapterC
+	writeAdapterStringify
+)

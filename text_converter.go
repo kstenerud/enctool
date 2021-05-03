@@ -25,6 +25,37 @@ import (
 	"io"
 )
 
+type StringifyWriter struct {
+	writer io.Writer
+	buff   [2]byte
+}
+
+func newStringifyWriter(writer io.Writer) io.Writer {
+	this := &StringifyWriter{
+		writer: writer,
+	}
+	this.buff[0] = '\\'
+	return this
+}
+
+func (this *StringifyWriter) Write(p []byte) (n int, err error) {
+	var offset int
+	for i := 0; i < len(p); i++ {
+		this.buff[1] = p[i]
+		switch this.buff[1] {
+		case '"', '\\':
+			offset = 0
+		default:
+			offset = 1
+		}
+		if _, err = this.writer.Write(this.buff[offset:]); err != nil {
+			return
+		}
+		n++
+	}
+	return
+}
+
 type CWriter struct {
 	writer      io.Writer
 	isFirstbyte bool
