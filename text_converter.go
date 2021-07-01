@@ -230,6 +230,7 @@ func (this TextByteReader) Read(p []byte) (n int, err error) {
 		if err != nil {
 			return
 		}
+		n++
 	}
 	return
 }
