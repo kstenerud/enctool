@@ -92,12 +92,7 @@ func XMLToCE(in io.Reader, encoder events.DataEventReceiver) error {
 				encoder.OnStringlikeArray(events.ArrayTypeString, str)
 			}
 		case xml.Comment:
-			str := strings.TrimSpace(string(elem))
-			if len(str) > 0 {
-				encoder.OnComment()
-				encoder.OnStringlikeArray(events.ArrayTypeString, str)
-				encoder.OnEnd()
-			}
+			encoder.OnComment(true, elem)
 		case xml.ProcInst:
 			// TODO: Anything?
 		case xml.Directive:
@@ -142,11 +137,8 @@ func (_this *XMLEventReceiver) OnMarkup(name []byte) {
 	_this.stage = MarkupStageAttributeKey
 }
 
-func (_this *XMLEventReceiver) OnComment() {
-	if _this.stage == MarkupStageComment {
-		panic(fmt.Errorf("XML does not support nested comments"))
-	}
-	_this.stage = MarkupStageComment
+func (_this *XMLEventReceiver) OnComment(isMultiline bool, contents []byte) {
+	_this.encoder.EncodeToken(xml.Comment(string(contents)))
 }
 
 func (_this *XMLEventReceiver) OnStringlikeArray(arrayType events.ArrayType, str string) {
@@ -167,8 +159,6 @@ func (_this *XMLEventReceiver) OnStringlikeArray(arrayType events.ArrayType, str
 	case MarkupStageContents:
 		_this.encoder.EncodeToken(xml.CharData(str))
 		_this.clearStringBuffer()
-	case MarkupStageComment:
-		_this.appendStringBuffer([]byte(str))
 	default:
 		panic(fmt.Errorf("Non-markup content detected"))
 	}
@@ -189,10 +179,6 @@ func (_this *XMLEventReceiver) OnEnd() {
 			Name: toXMLName(name),
 		})
 		_this.unstackMarkup()
-	case MarkupStageComment:
-		_this.encoder.EncodeToken(xml.Comment(_this.stringBuffer))
-		_this.clearStringBuffer()
-		_this.stage = MarkupStageContents
 	default:
 		panic(fmt.Errorf("BUG: Unhandled stage: %v", _this.stage))
 	}
@@ -346,8 +332,12 @@ func (_this *XMLEventReceiver) OnMap() {
 	panic(fmt.Errorf("Cannot convert map to XML"))
 }
 
-func (_this *XMLEventReceiver) OnRelationship() {
-	panic(fmt.Errorf("Cannot convert relationship to XML"))
+func (_this *XMLEventReceiver) OnNode() {
+	panic("Cannot convert node to xml")
+}
+
+func (_this *XMLEventReceiver) OnEdge() {
+	panic(fmt.Errorf("Cannot convert edge to XML"))
 }
 
 func (_this *XMLEventReceiver) OnMarker([]byte) {
@@ -406,5 +396,4 @@ const (
 	MarkupStageAttributeKey
 	MarkupStageAttributeValue
 	MarkupStageContents
-	MarkupStageComment
 )
