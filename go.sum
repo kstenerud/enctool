@@ -1,11 +1,11 @@
 github.com/cockroachdb/apd/v2 v2.0.2 h1:weh8u7Cneje73dDh+2tEVLUvyBc89iwepWCD8b8034E=
 github.com/cockroachdb/apd/v2 v2.0.2/go.mod h1:DDxRlzC2lo3/vSlmSoS7JkqbbrARPuFOGr0B9pvN3Gw=
-github.com/kstenerud/go-compact-float v1.5.0 h1:NoHM4ItOSTviByI0sP8IUqeSrTeCpQp4+XwFs/b3Yqw=
-github.com/kstenerud/go-compact-float v1.5.0/go.mod h1:86Q5GkzClM2g0hObQndeX90g5kKMhG7eptDFsVrubbk=
+github.com/kstenerud/go-compact-float v1.6.0 h1:JKDQkSQ3vVDcTCh2rr/Hi7H/W6fD7xhCN+eJPxVDsI4=
+github.com/kstenerud/go-compact-float v1.6.0/go.mod h1:86Q5GkzClM2g0hObQndeX90g5kKMhG7eptDFsVrubbk=
 github.com/kstenerud/go-compact-time v1.8.3 h1:VPhN2UwJsJjAHnHbGuqLibNF8e7PXG4nBFpZ3UkjsRg=
 github.com/kstenerud/go-compact-time v1.8.3/go.mod h1:wBgxWliL/ON5b1/EaefPqQ44u2UgTtiNiIvkmByYFFc=
-github.com/kstenerud/go-concise-encoding v0.0.0-20211109074053-122f7d10eef2 h1:cydIDfMBkwhicLE7WbxHCNFqAmAhj33YhDtmu1zOKzc=
-github.com/kstenerud/go-concise-encoding v0.0.0-20211109074053-122f7d10eef2/go.mod h1:sZUN0ZzuQyXv88bx5Rd5qflWGg/vnlVGmQ3UDnOeUJo=
+github.com/kstenerud/go-concise-encoding v0.0.0-20211113133300-5a9337c8236d h1:IAl3BoYSbRyyKson3RL4jlKCjtMG9OrftIbZivYF2j8=
+github.com/kstenerud/go-concise-encoding v0.0.0-20211113133300-5a9337c8236d/go.mod h1:1frvUs3w4qacHrLLs66G1QxR0grBcygpPoXRF1+DFZk=
 github.com/kstenerud/go-describe v1.2.13 h1:3EazEwS/oNw0uMGQt45UvuxNNVEjR65dkAoy3CtiQN8=
 github.com/kstenerud/go-describe v1.2.13/go.mod h1:+B7K/fXHhObqwmMhcUT0CPT68fR1SQ9XNmJ5E4ck2RI=
 github.com/kstenerud/go-duplicates v1.1.1 h1:Z8pdWHv842d/vszSeoWGAswbxx/8SHxz+/DNYQUl4jU=
