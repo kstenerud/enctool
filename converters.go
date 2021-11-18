@@ -38,7 +38,7 @@ func getConverter(id string) (converter, error) {
 }
 
 func CBEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := options.DefaultCBEDecoderOptions()
+	decoderOpts := options.DefaultCEDecoderOptions()
 	encoderOpts := options.DefaultCBEEncoderOptions()
 	rulesOpts := options.DefaultRuleOptions()
 	encoder := cbe.NewEncoder(encoderOpts)
@@ -49,7 +49,7 @@ func CBEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
 }
 
 func CBEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := options.DefaultCBEDecoderOptions()
+	decoderOpts := options.DefaultCEDecoderOptions()
 	encoderOpts := options.DefaultCTEEncoderOptions()
 	encoderOpts.Indent = generateSpaces(config.indentSpaces)
 	rulesOpts := options.DefaultRuleOptions()
@@ -61,7 +61,7 @@ func CBEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
 }
 
 func CTEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := options.DefaultCTEDecoderOptions()
+	decoderOpts := options.DefaultCEDecoderOptions()
 	encoderOpts := options.DefaultCTEEncoderOptions()
 	rulesOpts := options.DefaultRuleOptions()
 	encoder := cte.NewEncoder(encoderOpts)
@@ -72,7 +72,7 @@ func CTEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
 }
 
 func CTEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := options.DefaultCTEDecoderOptions()
+	decoderOpts := options.DefaultCEDecoderOptions()
 	encoderOpts := options.DefaultCBEEncoderOptions()
 	rulesOpts := options.DefaultRuleOptions()
 	encoder := cbe.NewEncoder(encoderOpts)

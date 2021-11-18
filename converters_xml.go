@@ -16,8 +16,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/version"
 
 	"github.com/cockroachdb/apd/v2"
-	"github.com/kstenerud/go-compact-float"
-	"github.com/kstenerud/go-compact-time"
+	compact_float "github.com/kstenerud/go-compact-float"
+	compact_time "github.com/kstenerud/go-compact-time"
 )
 
 func XMLToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
@@ -216,7 +216,7 @@ func (_this *XMLEventReceiver) OnNA() {
 	panic("Cannot convert NA type to xml")
 }
 
-func (_this *XMLEventReceiver) OnNil() {
+func (_this *XMLEventReceiver) OnNull() {
 	_this.OnStringlikeArray(events.ArrayTypeString, "null")
 }
 
