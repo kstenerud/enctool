@@ -131,7 +131,7 @@ func detectSrcFormat(reader *bufio.Reader) (string, error) {
 	switch begin[0] {
 	case 'c':
 		return "cte", nil
-	case 0x03:
+	case 0x83:
 		return "cbe", nil
 	default:
 		return "json", nil
