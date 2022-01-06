@@ -39,6 +39,7 @@ type encoderConfig struct {
 	invertText      bool
 	imageSize       uint
 	errorCorrection uint
+	borderSize      uint
 }
 
 func getKnownEncoders() []string {

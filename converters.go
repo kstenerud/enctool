@@ -110,6 +110,7 @@ func CBEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
 	if err != nil {
 		return err
 	}
+	q.BorderSize = int(config.borderSize)
 	png, err := q.PNG(int(config.imageSize))
 	if err != nil {
 		return err
@@ -138,6 +139,7 @@ func CTEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
 	if err != nil {
 		return err
 	}
+	q.BorderSize = int(config.borderSize)
 	png, err := q.PNG(int(config.imageSize))
 	if err != nil {
 		return err
