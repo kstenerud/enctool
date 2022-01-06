@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"image"
 	"io"
 	"strings"
 
@@ -9,6 +11,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
+	qrcode "github.com/kstenerud/go-qrcode"
+	"github.com/liyue201/goqr"
 )
 
 type converter func(io.Reader, io.Writer, *encoderConfig) error
@@ -19,6 +23,11 @@ var knownConverters = map[string]converter{
 	"cbe-json":  CBEToJSON,
 	"cte-cte":   CTEToCTE,
 	"cte-cbe":   CTEToCBE,
+	"cbe-qr":    CBEToQR,
+	"cte-qr":    CTEToQR,
+	"cte-qrt":   CTEToQRT,
+	"qr-cte":    QRToCTE,
+	"qr-cbe":    QRToCBE,
 	"cte-json":  CTEToJSON,
 	"json-json": JSONToJSON,
 	"json-cbe":  JSONToCBE,
@@ -80,6 +89,137 @@ func CTEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
 	decoder := cte.NewDecoder(decoderOpts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(in, rules)
+}
+
+func CBEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
+	decoderOpts := options.DefaultCEDecoderOptions()
+	encoderOpts := options.DefaultCBEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
+	encoder := cbe.NewEncoder(encoderOpts)
+	rules := rules.NewRules(encoder, rulesOpts)
+	decoder := cbe.NewDecoder(decoderOpts)
+
+	buff := &bytes.Buffer{}
+	encoder.PrepareToEncode(buff)
+	err := decoder.Decode(in, rules)
+	if err != nil {
+		return err
+	}
+
+	q, err := qrcode.New(buff.Bytes(), qrcode.Low)
+	if err != nil {
+		return err
+	}
+	png, err := q.PNG(256)
+	if err != nil {
+		return err
+	}
+
+	_, err = out.Write(png)
+	return err
+}
+
+func CTEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
+	decoderOpts := options.DefaultCEDecoderOptions()
+	encoderOpts := options.DefaultCBEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
+	encoder := cbe.NewEncoder(encoderOpts)
+	rules := rules.NewRules(encoder, rulesOpts)
+	decoder := cte.NewDecoder(decoderOpts)
+
+	buff := &bytes.Buffer{}
+	encoder.PrepareToEncode(buff)
+	err := decoder.Decode(in, rules)
+	if err != nil {
+		return err
+	}
+
+	q, err := qrcode.New(buff.Bytes(), qrcode.Low)
+	if err != nil {
+		return err
+	}
+	png, err := q.PNG(256)
+	if err != nil {
+		return err
+	}
+
+	_, err = out.Write(png)
+	return err
+}
+
+func CTEToQRT(in io.Reader, out io.Writer, config *encoderConfig) error {
+	decoderOpts := options.DefaultCEDecoderOptions()
+	encoderOpts := options.DefaultCBEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
+	encoder := cbe.NewEncoder(encoderOpts)
+	rules := rules.NewRules(encoder, rulesOpts)
+	decoder := cte.NewDecoder(decoderOpts)
+
+	buff := &bytes.Buffer{}
+	encoder.PrepareToEncode(buff)
+	err := decoder.Decode(in, rules)
+	if err != nil {
+		return err
+	}
+
+	q, err := qrcode.New(buff.Bytes(), qrcode.Low)
+	if err != nil {
+		return err
+	}
+	if config.invertText {
+		q.BorderSize = 0
+	}
+	art := q.ToString(config.invertText)
+	_, err = out.Write([]byte(art))
+	return err
+}
+
+func QRToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
+	img, _, err := image.Decode(in)
+	if err != nil {
+		return err
+	}
+	qrCodes, err := goqr.Recognize(img)
+	if err != nil {
+		return err
+	}
+	buff := &bytes.Buffer{}
+	for _, qrCode := range qrCodes {
+		buff.Write(qrCode.Payload)
+	}
+
+	decoderOpts := options.DefaultCEDecoderOptions()
+	encoderOpts := options.DefaultCTEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
+	encoder := cte.NewEncoder(encoderOpts)
+	rules := rules.NewRules(encoder, rulesOpts)
+	decoder := cbe.NewDecoder(decoderOpts)
+	encoder.PrepareToEncode(out)
+	return decoder.Decode(buff, rules)
+}
+
+func QRToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
+	img, _, err := image.Decode(in)
+	if err != nil {
+		return err
+	}
+	qrCodes, err := goqr.Recognize(img)
+	if err != nil {
+		return err
+	}
+	buff := &bytes.Buffer{}
+	for _, qrCode := range qrCodes {
+		buff.Write(qrCode.Payload)
+	}
+
+	decoderOpts := options.DefaultCEDecoderOptions()
+	encoderOpts := options.DefaultCBEEncoderOptions()
+	rulesOpts := options.DefaultRuleOptions()
+	encoder := cbe.NewEncoder(encoderOpts)
+	rules := rules.NewRules(encoder, rulesOpts)
+	decoder := cbe.NewDecoder(decoderOpts)
+	encoder.PrepareToEncode(out)
+	return decoder.Decode(buff, rules)
 }
 
 func JSONToCBE(in io.Reader, out io.Writer, config *encoderConfig) (err error) {

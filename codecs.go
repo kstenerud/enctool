@@ -36,6 +36,7 @@ import (
 
 type encoderConfig struct {
 	indentSpaces int
+	invertText   bool
 }
 
 func getKnownEncoders() []string {
