@@ -111,6 +111,10 @@ func (_this *cmdConvert) Init(args []string) (err error) {
 	_this.encoderConfig.indentSpaces = int(fields.getUint("i"))
 	_this.encoderConfig.invertText = fields.getBool("I")
 	_this.encoderConfig.imageSize = fields.getUint("is")
+	_this.encoderConfig.errorCorrection = fields.getUint("e")
+	if _this.encoderConfig.errorCorrection > 3 {
+		return fmt.Errorf("error correction max is 3")
+	}
 
 	_this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
@@ -167,6 +171,7 @@ func (_this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields["S"] = fs.Bool("S", false, "write destination as stringified (escapes \" and \\ characters)")
 	fields["I"] = fs.Bool("I", false, "Invert text color (for text-mode QR codes only)")
 	fields["is"] = fs.Uint("is", 256, "Target image size in pixels (for image QR codes only)")
+	fields["e"] = fs.Uint("e", 0, "Error correction level 0=lowest, 3=highest (for image QR codes only)")
 
 	return
 }

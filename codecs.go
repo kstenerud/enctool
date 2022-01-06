@@ -35,9 +35,10 @@ import (
 )
 
 type encoderConfig struct {
-	indentSpaces int
-	invertText   bool
-	imageSize    uint
+	indentSpaces    int
+	invertText      bool
+	imageSize       uint
+	errorCorrection uint
 }
 
 func getKnownEncoders() []string {
