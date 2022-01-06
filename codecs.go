@@ -37,6 +37,7 @@ import (
 type encoderConfig struct {
 	indentSpaces int
 	invertText   bool
+	imageSize    uint
 }
 
 func getKnownEncoders() []string {
