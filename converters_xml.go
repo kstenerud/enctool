@@ -108,8 +108,6 @@ func XMLToCE(in io.Reader, encoder events.DataEventReceiver) error {
 			return err
 		}
 	}
-
-	return nil
 }
 
 type XMLEventReceiver struct {
@@ -143,7 +141,7 @@ func (_this *XMLEventReceiver) OnComment(isMultiline bool, contents []byte) {
 
 func (_this *XMLEventReceiver) OnStringlikeArray(arrayType events.ArrayType, str string) {
 	if arrayType != events.ArrayTypeResourceID && arrayType != events.ArrayTypeString {
-		panic(fmt.Errorf("Cannot convert array type %v to XML", arrayType))
+		panic(fmt.Errorf("cannot convert array type %v to XML", arrayType))
 	}
 
 	switch _this.stage {
@@ -160,7 +158,7 @@ func (_this *XMLEventReceiver) OnStringlikeArray(arrayType events.ArrayType, str
 		_this.encoder.EncodeToken(xml.CharData(str))
 		_this.clearStringBuffer()
 	default:
-		panic(fmt.Errorf("Non-markup content detected"))
+		panic(fmt.Errorf("non-markup content detected"))
 	}
 }
 
@@ -300,13 +298,13 @@ func (_this *XMLEventReceiver) OnArray(arrayType events.ArrayType, elemCount uin
 	case events.ArrayTypeResourceID, events.ArrayTypeString:
 		_this.OnStringlikeArray(arrayType, string(elems))
 	default:
-		panic(fmt.Errorf("Cannot convert array type %v to XML", arrayType))
+		panic(fmt.Errorf("cannot convert array type %v to XML", arrayType))
 	}
 }
 
 func (_this *XMLEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	if arrayType != events.ArrayTypeResourceID && arrayType != events.ArrayTypeString {
-		panic(fmt.Errorf("Cannot convert array type %v to XML", arrayType))
+		panic(fmt.Errorf("cannot convert array type %v to XML", arrayType))
 	}
 	_this.clearStringBuffer()
 }
@@ -325,11 +323,11 @@ func (_this *XMLEventReceiver) OnArrayData(data []byte) {
 }
 
 func (_this *XMLEventReceiver) OnList() {
-	panic(fmt.Errorf("Cannot convert list to XML"))
+	panic(fmt.Errorf("cannot convert list to XML"))
 }
 
 func (_this *XMLEventReceiver) OnMap() {
-	panic(fmt.Errorf("Cannot convert map to XML"))
+	panic(fmt.Errorf("cannot convert map to XML"))
 }
 
 func (_this *XMLEventReceiver) OnNode() {
@@ -337,23 +335,23 @@ func (_this *XMLEventReceiver) OnNode() {
 }
 
 func (_this *XMLEventReceiver) OnEdge() {
-	panic(fmt.Errorf("Cannot convert edge to XML"))
+	panic(fmt.Errorf("cannot convert edge to XML"))
 }
 
 func (_this *XMLEventReceiver) OnMarker([]byte) {
-	panic(fmt.Errorf("Cannot convert marker to XML"))
+	panic(fmt.Errorf("cannot convert marker to XML"))
 }
 
 func (_this *XMLEventReceiver) OnReference([]byte) {
-	panic(fmt.Errorf("Cannot convert reference to XML"))
+	panic(fmt.Errorf("cannot convert reference to XML"))
 }
 
 func (_this *XMLEventReceiver) OnRIDReference() {
-	panic(fmt.Errorf("Cannot convert resource ID ref to XML"))
+	panic(fmt.Errorf("cannot convert resource ID ref to XML"))
 }
 
 func (_this *XMLEventReceiver) OnConstant(_ []byte) {
-	panic(fmt.Errorf("Cannot convert constant to XML"))
+	panic(fmt.Errorf("cannot convert constant to XML"))
 }
 
 func (_this *XMLEventReceiver) OnEndDocument() {}

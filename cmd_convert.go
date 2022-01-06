@@ -32,27 +32,25 @@ type cmdConvert struct {
 	srcReader     io.Reader
 	dstWriter     io.Writer
 	converter     converter
-	encode        encoder
-	decode        decoder
 	encoderConfig encoderConfig
 }
 
-func (this *cmdConvert) Name() string { return "convert" }
+func (_this *cmdConvert) Name() string { return "convert" }
 
-func (this *cmdConvert) Description() string { return "Convert between formats" }
+func (_this *cmdConvert) Description() string { return "Convert between formats" }
 
-func (this *cmdConvert) Usage() string {
-	fs, _ := this.newFlagSet()
+func (_this *cmdConvert) Usage() string {
+	fs, _ := _this.newFlagSet()
 	return getFlagsUsage(fs)
 }
 
-func (this *cmdConvert) Run() (err error) {
-	err = this.converter(this.srcReader, this.dstWriter, &this.encoderConfig)
+func (_this *cmdConvert) Run() (err error) {
+	err = _this.converter(_this.srcReader, _this.dstWriter, &_this.encoderConfig)
 	return
 }
 
-func (this *cmdConvert) Init(args []string) (err error) {
-	fs, fields := this.newFlagSet()
+func (_this *cmdConvert) Init(args []string) (err error) {
+	fs, fields := _this.newFlagSet()
 	if err = parseFlagsQuietly(fs, args); err != nil {
 		return usageError("%v", err)
 	}
@@ -88,7 +86,7 @@ func (this *cmdConvert) Init(args []string) (err error) {
 	}
 	if fields.getBool("t") {
 		if readAdapter != readAdapterNone {
-			return fmt.Errorf("Cannot choose modes -x and -t simultaneously")
+			return fmt.Errorf("cannot choose modes -x and -t simultaneously")
 		}
 		readAdapter = readAdapterText
 	}
@@ -99,60 +97,60 @@ func (this *cmdConvert) Init(args []string) (err error) {
 	}
 	if fields.getBool("C") {
 		if writeAdapter != writeAdapterNone {
-			return fmt.Errorf("Cannot choose more than one of -X -C -S simultaneously")
+			return fmt.Errorf("cannot choose more than one of -X -C -S simultaneously")
 		}
 		writeAdapter = writeAdapterC
 	}
 	if fields.getBool("S") {
 		if writeAdapter != writeAdapterNone {
-			return fmt.Errorf("Cannot choose more than one of -X -C -S simultaneously")
+			return fmt.Errorf("cannot choose more than one of -X -C -S simultaneously")
 		}
 		writeAdapter = writeAdapterStringify
 	}
 
-	this.encoderConfig.indentSpaces = int(fields.getUint("i"))
+	_this.encoderConfig.indentSpaces = int(fields.getUint("i"))
 
-	this.srcReader, err = openFileRead(srcFile)
+	_this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
-		return fmt.Errorf("Error opening %v: %v", srcFile, err)
+		return fmt.Errorf("error opening %v: %v", srcFile, err)
 	}
 	switch readAdapter {
 	case readAdapterHex:
-		this.srcReader = newHexReader(this.srcReader)
+		_this.srcReader = newHexReader(_this.srcReader)
 	case readAdapterText:
-		this.srcReader = newTextByteReader(this.srcReader)
+		_this.srcReader = newTextByteReader(_this.srcReader)
 	}
 
 	if len(srcFormat) == 0 {
-		bufReader := bufio.NewReader(this.srcReader)
-		this.srcReader = bufReader
+		bufReader := bufio.NewReader(_this.srcReader)
+		_this.srcReader = bufReader
 		srcFormat, err = detectSrcFormat(bufReader)
 		if err != nil {
-			return fmt.Errorf("Error detecting source format of %v: %v", srcFile, err)
+			return fmt.Errorf("error detecting source format of %v: %v", srcFile, err)
 		}
 	}
 
 	converterID := strings.ToLower(srcFormat) + "-" + strings.ToLower(dstFormat)
 
-	this.converter, err = getConverter(converterID)
+	_this.converter, err = getConverter(converterID)
 	if err != nil {
 		return err
 	}
 
-	this.dstWriter, err = openFileWrite(dstFile)
+	_this.dstWriter, err = openFileWrite(dstFile)
 	switch writeAdapter {
 	case writeAdapterC:
-		this.dstWriter = newCWriter(this.dstWriter)
+		_this.dstWriter = newCWriter(_this.dstWriter)
 	case writeAdapterHex:
-		this.dstWriter = newHexWriter(this.dstWriter)
+		_this.dstWriter = newHexWriter(_this.dstWriter)
 	case writeAdapterStringify:
-		this.dstWriter = newStringifyWriter(this.dstWriter)
+		_this.dstWriter = newStringifyWriter(_this.dstWriter)
 	}
 
 	return
 }
 
-func (this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
+func (_this *cmdConvert) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("convert", flag.ContinueOnError)
 	fields["sf"] = fs.String("sf", "", "The source format to convert from (auto-detected if not specified)")
@@ -176,7 +174,7 @@ func init() {
 type readAdapter int
 
 const (
-	readAdapterNone = iota
+	readAdapterNone readAdapter = iota
 	readAdapterHex
 	readAdapterText
 )
@@ -184,7 +182,7 @@ const (
 type writeAdapter int
 
 const (
-	writeAdapterNone = iota
+	writeAdapterNone writeAdapter = iota
 	writeAdapterHex
 	writeAdapterC
 	writeAdapterStringify

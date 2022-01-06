@@ -78,7 +78,7 @@ func main() {
 	if err := cmd.Init(args[2:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Stderr.Sync()
-		if errors.Is(err, UsageError) {
+		if errors.Is(err, ErrorUsage) {
 			printUsageExit(cmd)
 		}
 		os.Exit(1)
@@ -87,7 +87,7 @@ func main() {
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Stderr.Sync()
-		if errors.Is(err, UsageError) {
+		if errors.Is(err, ErrorUsage) {
 			printUsageExit(cmd)
 		}
 		os.Exit(1)

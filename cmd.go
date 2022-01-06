@@ -24,7 +24,7 @@ import (
 	"errors"
 )
 
-var UsageError = errors.New("")
+var ErrorUsage = errors.New("")
 
 type Command interface {
 	Name() string

@@ -38,17 +38,17 @@ func newStringifyWriter(writer io.Writer) io.Writer {
 	return this
 }
 
-func (this *StringifyWriter) Write(p []byte) (n int, err error) {
+func (_this *StringifyWriter) Write(p []byte) (n int, err error) {
 	var offset int
 	for i := 0; i < len(p); i++ {
-		this.buff[1] = p[i]
-		switch this.buff[1] {
+		_this.buff[1] = p[i]
+		switch _this.buff[1] {
 		case '"', '\\':
 			offset = 0
 		default:
 			offset = 1
 		}
-		if _, err = this.writer.Write(this.buff[offset:]); err != nil {
+		if _, err = _this.writer.Write(_this.buff[offset:]); err != nil {
 			return
 		}
 		n++
@@ -74,17 +74,17 @@ func newCWriter(writer io.Writer) io.Writer {
 	return this
 }
 
-func (this *CWriter) Write(p []byte) (n int, err error) {
+func (_this *CWriter) Write(p []byte) (n int, err error) {
 	for i := 0; i < len(p); i++ {
 		b := p[i]
-		this.buff[4] = hexChars[b>>4]
-		this.buff[5] = hexChars[b&15]
-		buff := this.buff[:]
-		if this.isFirstbyte {
+		_this.buff[4] = hexChars[b>>4]
+		_this.buff[5] = hexChars[b&15]
+		buff := _this.buff[:]
+		if _this.isFirstbyte {
 			buff = buff[2:]
-			this.isFirstbyte = false
+			_this.isFirstbyte = false
 		}
-		if _, err = this.writer.Write(buff); err != nil {
+		if _, err = _this.writer.Write(buff); err != nil {
 			return
 		}
 		n++
@@ -109,17 +109,17 @@ func newHexWriter(writer io.Writer) io.Writer {
 	return this
 }
 
-func (this *HexWriter) Write(p []byte) (n int, err error) {
+func (_this *HexWriter) Write(p []byte) (n int, err error) {
 	for i := 0; i < len(p); i++ {
 		b := p[i]
-		this.buff[1] = hexChars[b>>4]
-		this.buff[2] = hexChars[b&15]
-		buff := this.buff[:]
-		if this.isFirstbyte {
+		_this.buff[1] = hexChars[b>>4]
+		_this.buff[2] = hexChars[b&15]
+		buff := _this.buff[:]
+		if _this.isFirstbyte {
 			buff = buff[1:]
-			this.isFirstbyte = false
+			_this.isFirstbyte = false
 		}
-		if _, err = this.writer.Write(buff); err != nil {
+		if _, err = _this.writer.Write(buff); err != nil {
 			return
 		}
 		n++
@@ -139,32 +139,32 @@ type HexReader struct {
 	TokenReader
 }
 
-func (this HexReader) convertOneByte() (b byte, err error) {
+func (_this HexReader) convertOneByte() (b byte, err error) {
 	var token []byte
-	token, err = this.readToken()
+	token, err = _this.readToken()
 	if err != nil {
 		return
 	}
 
 	if len(token) != 2 {
-		err = fmt.Errorf("Offset %v: Cannot convert %v to hex", this.offset, string(token))
+		err = fmt.Errorf("offset %v: Cannot convert %v to hex", _this.offset, string(token))
 		return
 	}
 
 	for i := 0; i < len(token); i++ {
 		flags := charFlags[token[i]]
 		if flags&charFlagHex == 0 {
-			return 0, fmt.Errorf("Offset %v: Cannot convert %v to hex", this.offset, string(token))
+			return 0, fmt.Errorf("offset %v: Cannot convert %v to hex", _this.offset, string(token))
 		}
 		b = (b << 4) | (flags & charValueMask)
 	}
 	return
 }
 
-func (this HexReader) Read(p []byte) (n int, err error) {
+func (_this HexReader) Read(p []byte) (n int, err error) {
 	for i := 0; i < len(p); i++ {
 		var b byte
-		b, err = this.convertOneByte()
+		b, err = _this.convertOneByte()
 		p[i] = b
 		if err != nil {
 			return
@@ -188,9 +188,9 @@ type TextByteReader struct {
 	TokenReader
 }
 
-func (this TextByteReader) convertOneByte() (b byte, err error) {
+func (_this TextByteReader) convertOneByte() (b byte, err error) {
 	var token []byte
-	token, err = this.readToken()
+	token, err = _this.readToken()
 	if err != nil {
 		return
 	}
@@ -199,7 +199,7 @@ func (this TextByteReader) convertOneByte() (b byte, err error) {
 		for i := 2; i < len(token); i++ {
 			flags := charFlags[token[i]]
 			if flags&charFlagHex == 0 {
-				return 0, fmt.Errorf("Offset %v: Cannot convert %v to hex", this.offset, string(token))
+				return 0, fmt.Errorf("offset %v: Cannot convert %v to hex", _this.offset, string(token))
 			}
 			b = (b << 4) | (flags & charValueMask)
 		}
@@ -210,22 +210,22 @@ func (this TextByteReader) convertOneByte() (b byte, err error) {
 	for i := 0; i < len(token); i++ {
 		flags := charFlags[token[i]]
 		if flags&charFlagDecimal == 0 {
-			return 0, fmt.Errorf("Offset %v: Cannot convert %v to decimal", this.offset, string(token))
+			return 0, fmt.Errorf("offset %v: Cannot convert %v to decimal", _this.offset, string(token))
 		}
 		v = v*10 + uint64(flags&charValueMask)
 	}
 	if v > 0xff {
-		return 0, fmt.Errorf("Offset %v: Value %v is too big for a byte", this.offset, string(token))
+		return 0, fmt.Errorf("offset %v: Value %v is too big for a byte", _this.offset, string(token))
 	}
 
 	b = byte(v)
 	return
 }
 
-func (this TextByteReader) Read(p []byte) (n int, err error) {
+func (_this TextByteReader) Read(p []byte) (n int, err error) {
 	for i := 0; i < len(p); i++ {
 		var b byte
-		b, err = this.convertOneByte()
+		b, err = _this.convertOneByte()
 		p[i] = b
 		if err != nil {
 			return
@@ -244,19 +244,19 @@ type TokenReader struct {
 	token  []byte
 }
 
-func (this TokenReader) readByte() (b byte, err error) {
-	_, err = this.reader.Read(this.buff[:])
-	b = this.buff[0]
-	this.offset++
+func (_this TokenReader) readByte() (b byte, err error) {
+	_, err = _this.reader.Read(_this.buff[:])
+	b = _this.buff[0]
+	_this.offset++
 	return
 }
 
-func (this TokenReader) readToken() (token []byte, err error) {
-	this.token = this.token[:0]
+func (_this TokenReader) readToken() (token []byte, err error) {
+	_this.token = _this.token[:0]
 	var b byte
 
 	for {
-		if b, err = this.readByte(); err != nil {
+		if b, err = _this.readByte(); err != nil {
 			return
 		}
 		if charFlags[b]&charFlagToken != 0 {
@@ -265,8 +265,8 @@ func (this TokenReader) readToken() (token []byte, err error) {
 	}
 
 	for {
-		this.token = append(this.token, b)
-		if b, err = this.readByte(); err != nil {
+		_this.token = append(_this.token, b)
+		if b, err = _this.readByte(); err != nil {
 			break
 		}
 		if charFlags[b]&charFlagToken == 0 {
@@ -277,7 +277,7 @@ func (this TokenReader) readToken() (token []byte, err error) {
 	if err == io.EOF {
 		err = nil
 	}
-	token = this.token
+	token = _this.token
 	return
 }
 

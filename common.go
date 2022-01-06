@@ -35,7 +35,7 @@ func getFlagsUsage(fs *flag.FlagSet) string {
 	outputBuffer := bytes.Buffer{}
 	fs.SetOutput(&outputBuffer)
 	fs.Usage()
-	return string(outputBuffer.Bytes())
+	return outputBuffer.String()
 }
 
 func parseFlagsQuietly(fs *flag.FlagSet, args []string) (err error) {
@@ -48,7 +48,7 @@ func parseFlagsQuietly(fs *flag.FlagSet, args []string) (err error) {
 
 func usageError(format string, args ...interface{}) error {
 	message := fmt.Sprintf(format, args...)
-	return fmt.Errorf("%v%w", message, UsageError)
+	return fmt.Errorf("%v%w", message, ErrorUsage)
 }
 
 func openFileRead(path string) (io.Reader, error) {
@@ -58,7 +58,7 @@ func openFileRead(path string) (io.Reader, error) {
 
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening %v: %v", path, err)
+		return nil, fmt.Errorf("error opening %v: %v", path, err)
 	}
 	return f, nil
 }
@@ -70,15 +70,15 @@ func openFileWrite(path string) (io.Writer, error) {
 
 	f, err := os.Create(path)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening %v: %v", path, err)
+		return nil, fmt.Errorf("error opening %v: %v", path, err)
 	}
 	return f, nil
 }
 
 type fieldValues map[string]interface{}
 
-func (this fieldValues) getRequiredString(id string, name string) (string, error) {
-	field, ok := this[id]
+func (_this fieldValues) getRequiredString(id string, name string) (string, error) {
+	field, ok := _this[id]
 	if !ok {
 		return "", usageError("%v (-%v) is a required parameter", name, id)
 	}
@@ -93,8 +93,8 @@ func (this fieldValues) getRequiredString(id string, name string) (string, error
 	return value, nil
 }
 
-func (this fieldValues) getString(id string, name string) (string, error) {
-	field, ok := this[id]
+func (_this fieldValues) getString(id string, name string) (string, error) {
+	field, ok := _this[id]
 	if !ok {
 		return "", nil
 	}
@@ -105,8 +105,8 @@ func (this fieldValues) getString(id string, name string) (string, error) {
 	return *v, nil
 }
 
-func (this fieldValues) getUint(id string) uint {
-	field := this[id]
+func (_this fieldValues) getUint(id string) uint {
+	field := _this[id]
 	v, ok := field.(*uint)
 	if !ok {
 		panic(fmt.Errorf("BUG: Expected %v to contain a uint, but contains %v (%v)", id, field, reflect.TypeOf(field)))
@@ -114,8 +114,8 @@ func (this fieldValues) getUint(id string) uint {
 	return *v
 }
 
-func (this fieldValues) getBool(id string) bool {
-	field := this[id]
+func (_this fieldValues) getBool(id string) bool {
+	field := _this[id]
 	v, ok := field.(*bool)
 	if !ok {
 		panic(fmt.Errorf("BUG: Expected %v to contain a bool, but contains %v (%v)", id, field, reflect.TypeOf(field)))

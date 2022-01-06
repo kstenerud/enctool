@@ -35,30 +35,30 @@ type cmdPrint struct {
 	indent    uint
 }
 
-func (this *cmdPrint) Name() string { return "print" }
+func (_this *cmdPrint) Name() string { return "print" }
 
-func (this *cmdPrint) Description() string { return "Print a document's structure" }
+func (_this *cmdPrint) Description() string { return "Print a document's structure" }
 
-func (this *cmdPrint) Usage() string {
-	fs, _ := this.newFlagSet()
+func (_this *cmdPrint) Usage() string {
+	fs, _ := _this.newFlagSet()
 	return getFlagsUsage(fs)
 }
 
-func (this *cmdPrint) Run() (err error) {
-	v, err := this.decode(this.srcReader)
+func (_this *cmdPrint) Run() (err error) {
+	v, err := _this.decode(_this.srcReader)
 	if err != nil {
 		return
 	}
 	if v == nil {
 		fmt.Println("<nil>")
 	} else {
-		fmt.Println(describe.Describe(v, int(this.indent)))
+		fmt.Println(describe.Describe(v, int(_this.indent)))
 	}
 	return
 }
 
-func (this *cmdPrint) Init(args []string) (err error) {
-	fs, fields := this.newFlagSet()
+func (_this *cmdPrint) Init(args []string) (err error) {
+	fs, fields := _this.newFlagSet()
 	if err = parseFlagsQuietly(fs, args); err != nil {
 		return usageError("%v", err)
 	}
@@ -76,23 +76,23 @@ func (this *cmdPrint) Init(args []string) (err error) {
 		return
 	}
 
-	this.srcReader, err = openFileRead(srcFile)
+	_this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
 		return err
 	}
 
 	if len(srcFormat) == 0 {
-		bufReader := bufio.NewReader(this.srcReader)
-		this.srcReader = bufReader
+		bufReader := bufio.NewReader(_this.srcReader)
+		_this.srcReader = bufReader
 		srcFormat, err = detectSrcFormat(bufReader)
 		if err != nil {
 			return err
 		}
 	}
 
-	this.indent = fields.getUint("i")
+	_this.indent = fields.getUint("i")
 
-	this.decode, err = getDecoder(srcFormat)
+	_this.decode, err = getDecoder(srcFormat)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (this *cmdPrint) Init(args []string) (err error) {
 	return
 }
 
-func (this *cmdPrint) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
+func (_this *cmdPrint) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("print", flag.ContinueOnError)
 	fields["fmt"] = fs.String("fmt", "", "File format (auto-detected if not specified)")

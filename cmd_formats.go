@@ -28,16 +28,16 @@ import (
 type cmdFormats struct {
 }
 
-func (this *cmdFormats) Name() string { return "formats" }
+func (_this *cmdFormats) Name() string { return "formats" }
 
-func (this *cmdFormats) Description() string { return "Print a list of supported formats" }
+func (_this *cmdFormats) Description() string { return "Print a list of supported formats" }
 
-func (this *cmdFormats) Usage() string {
-	fs, _ := this.newFlagSet()
+func (_this *cmdFormats) Usage() string {
+	fs, _ := _this.newFlagSet()
 	return getFlagsUsage(fs)
 }
 
-func (this *cmdFormats) Run() (err error) {
+func (_this *cmdFormats) Run() (err error) {
 	fmt.Printf("Supported formats:\n")
 	for _, v := range getKnownDecoders() {
 		fmt.Printf("    %v\n", v)
@@ -45,11 +45,11 @@ func (this *cmdFormats) Run() (err error) {
 	return
 }
 
-func (this *cmdFormats) Init(args []string) (err error) {
+func (_this *cmdFormats) Init(args []string) (err error) {
 	return
 }
 
-func (this *cmdFormats) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
+func (_this *cmdFormats) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("formats", flag.ContinueOnError)
 

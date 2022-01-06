@@ -31,22 +31,22 @@ type cmdValidate struct {
 	decode    decoder
 }
 
-func (this *cmdValidate) Name() string { return "validate" }
+func (_this *cmdValidate) Name() string { return "validate" }
 
-func (this *cmdValidate) Description() string { return "Validate a document." }
+func (_this *cmdValidate) Description() string { return "Validate a document." }
 
-func (this *cmdValidate) Usage() string {
-	fs, _ := this.newFlagSet()
+func (_this *cmdValidate) Usage() string {
+	fs, _ := _this.newFlagSet()
 	return getFlagsUsage(fs)
 }
 
-func (this *cmdValidate) Run() (err error) {
-	_, err = this.decode(this.srcReader)
+func (_this *cmdValidate) Run() (err error) {
+	_, err = _this.decode(_this.srcReader)
 	return
 }
 
-func (this *cmdValidate) Init(args []string) (err error) {
-	fs, fields := this.newFlagSet()
+func (_this *cmdValidate) Init(args []string) (err error) {
+	fs, fields := _this.newFlagSet()
 	if err = parseFlagsQuietly(fs, args); err != nil {
 		return usageError("%v", err)
 	}
@@ -64,21 +64,21 @@ func (this *cmdValidate) Init(args []string) (err error) {
 		return
 	}
 
-	this.srcReader, err = openFileRead(srcFile)
+	_this.srcReader, err = openFileRead(srcFile)
 	if err != nil {
 		return err
 	}
 
 	if len(srcFormat) == 0 {
-		bufReader := bufio.NewReader(this.srcReader)
-		this.srcReader = bufReader
+		bufReader := bufio.NewReader(_this.srcReader)
+		_this.srcReader = bufReader
 		srcFormat, err = detectSrcFormat(bufReader)
 		if err != nil {
 			return err
 		}
 	}
 
-	this.decode, err = getDecoder(srcFormat)
+	_this.decode, err = getDecoder(srcFormat)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (this *cmdValidate) Init(args []string) (err error) {
 	return
 }
 
-func (this *cmdValidate) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
+func (_this *cmdValidate) newFlagSet() (fs *flag.FlagSet, fields fieldValues) {
 	fields = make(fieldValues)
 	fs = flag.NewFlagSet("validate", flag.ContinueOnError)
 	fields["fmt"] = fs.String("fmt", "", "File format (auto-detected if not specified)")

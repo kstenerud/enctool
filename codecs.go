@@ -240,15 +240,20 @@ func coerceToXMLable(value interface{}) interface{} {
 
 type XMLStringMap map[string]string
 
-func (this XMLStringMap) MarshalXML(e *xml.Encoder, start xml.StartElement) (err error) {
+func (_this XMLStringMap) MarshalXML(e *xml.Encoder, start xml.StartElement) (err error) {
 	tokens := []xml.Token{start}
 
-	for k, v := range this {
-		t := xml.StartElement{Name: xml.Name{"", k}}
-		tokens = append(tokens, t, xml.CharData(v), xml.EndElement{t.Name})
+	for k, v := range _this {
+		t := xml.StartElement{
+			Name: xml.Name{
+				Space: "",
+				Local: k,
+			},
+		}
+		tokens = append(tokens, t, xml.CharData(v), xml.EndElement{Name: t.Name})
 	}
 
-	tokens = append(tokens, xml.EndElement{start.Name})
+	tokens = append(tokens, xml.EndElement{Name: start.Name})
 
 	for _, t := range tokens {
 		if err = e.EncodeToken(t); err != nil {
