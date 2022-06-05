@@ -112,7 +112,7 @@ func decodeCTE(reader io.Reader) (result interface{}, err error) {
 func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	opts := options.DefaultCTEMarshalerOptions()
 	opts.Encoder.Indent = strings.Repeat(" ", config.indentSpaces)
-	err = ce.MarshalCTE(value, writer, opts)
+	err = ce.MarshalCTE(value, writer, &opts)
 	return
 }
 

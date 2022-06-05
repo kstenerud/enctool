@@ -23,8 +23,8 @@ import (
 func XMLToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
 	encoderOpts := options.DefaultCBEEncoderOptions()
 	rulesOpts := options.DefaultRuleOptions()
-	encoder := cbe.NewEncoder(encoderOpts)
-	rules := rules.NewRules(encoder, rulesOpts)
+	encoder := cbe.NewEncoder(&encoderOpts)
+	rules := rules.NewRules(encoder, &rulesOpts)
 	encoder.PrepareToEncode(out)
 
 	return XMLToCE(in, rules)
@@ -33,8 +33,8 @@ func XMLToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
 func XMLToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
 	encoderOpts := options.DefaultCTEEncoderOptions()
 	rulesOpts := options.DefaultRuleOptions()
-	encoder := cte.NewEncoder(encoderOpts)
-	rules := rules.NewRules(encoder, rulesOpts)
+	encoder := cte.NewEncoder(&encoderOpts)
+	rules := rules.NewRules(encoder, &rulesOpts)
 	encoder.PrepareToEncode(out)
 
 	return XMLToCE(in, rules)
@@ -77,11 +77,20 @@ func XMLToCE(in io.Reader, encoder events.DataEventReceiver) error {
 	for {
 		switch elem := token.(type) {
 		case xml.StartElement:
-			encoder.OnMarkup(getMarkupNameBytes(elem.Name))
-			for _, v := range elem.Attr {
-				b := getMarkupNameBytes(v.Name)
-				encoder.OnArray(events.ArrayTypeString, uint64(len(b)), b)
-				encoder.OnStringlikeArray(events.ArrayTypeString, v.Value)
+			encoder.OnNode()
+			encoder.OnMap()
+			encoder.OnStringlikeArray(events.ArrayTypeString, "tag")
+			tag := getMarkupNameBytes(elem.Name)
+			encoder.OnArray(events.ArrayTypeString, uint64(len(tag)), tag)
+			if len(elem.Attr) > 0 {
+				encoder.OnStringlikeArray(events.ArrayTypeString, "attributes")
+				encoder.OnMap()
+				for _, v := range elem.Attr {
+					b := getMarkupNameBytes(v.Name)
+					encoder.OnArray(events.ArrayTypeString, uint64(len(b)), b)
+					encoder.OnStringlikeArray(events.ArrayTypeString, v.Value)
+				}
+				encoder.OnEnd()
 			}
 			encoder.OnEnd()
 		case xml.EndElement:
@@ -129,11 +138,13 @@ func NewXMLEventReceiver(out io.Writer, indentSpaces int) *XMLEventReceiver {
 	return rcv
 }
 
-func (_this *XMLEventReceiver) OnMarkup(name []byte) {
-	_this.stackMarkup(string(name))
-	_this.attributes = _this.attributes[:0]
-	_this.stage = MarkupStageAttributeKey
-}
+// TODO: Convert ({"tag"="xyz" "attributes"={}}) to XML
+
+// func (_this *XMLEventReceiver) OnMarkup(name []byte) {
+// 	_this.stackMarkup(string(name))
+// 	_this.attributes = _this.attributes[:0]
+// 	_this.stage = MarkupStageAttributeKey
+// }
 
 func (_this *XMLEventReceiver) OnComment(isMultiline bool, contents []byte) {
 	_this.encoder.EncodeToken(xml.Comment(string(contents)))
@@ -331,7 +342,7 @@ func (_this *XMLEventReceiver) OnMap() {
 }
 
 func (_this *XMLEventReceiver) OnNode() {
-	panic("Cannot convert node to xml")
+	panic("TODO: Convert to XML")
 }
 
 func (_this *XMLEventReceiver) OnEdge() {
