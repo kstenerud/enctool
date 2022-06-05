@@ -21,9 +21,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"image"
 	"io"
 	"io/ioutil"
 	"reflect"
@@ -32,6 +34,8 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/options"
+	qrcode "github.com/kstenerud/go-qrcode"
+	"github.com/liyue201/goqr"
 )
 
 type encoderConfig struct {
@@ -88,6 +92,10 @@ func init() {
 	knownEncoders["json"] = encodeJSON
 	knownDecoders["xml"] = decodeXML
 	knownEncoders["xml"] = encodeXML
+	knownDecoders["qr"] = decodeQR
+	knownEncoders["qr"] = encodeQR
+	knownDecoders["qrt"] = decodeQRT
+	knownEncoders["qrt"] = encodeQRT
 	addCommand(new(cmdConvert))
 }
 
@@ -113,6 +121,78 @@ func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err 
 	opts := options.DefaultCTEMarshalerOptions()
 	opts.Encoder.Indent = strings.Repeat(" ", config.indentSpaces)
 	err = ce.MarshalCTE(value, writer, &opts)
+	return
+}
+
+func decodeQR(reader io.Reader) (result interface{}, err error) {
+	img, _, err := image.Decode(reader)
+	if err != nil {
+		return
+	}
+	qrCodes, err := goqr.Recognize(img)
+	if err != nil {
+		return
+	}
+	buff := &bytes.Buffer{}
+	for _, qrCode := range qrCodes {
+		buff.Write(qrCode.Payload)
+	}
+
+	result, err = ce.UnmarshalCBE(reader, result, nil)
+	return
+}
+
+func encodeQR(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
+	buff := &bytes.Buffer{}
+	if err = ce.MarshalCBE(value, buff, nil); err != nil {
+		return
+	}
+	q, err := qrcode.New(buff.Bytes(), qrcode.RecoveryLevel(config.errorCorrection))
+	if err != nil {
+		return
+	}
+	q.BorderSize = int(config.borderSize)
+	png, err := q.PNG(int(config.imageSize))
+	if err != nil {
+		return
+	}
+
+	_, err = writer.Write(png)
+	return
+}
+
+func decodeQRT(reader io.Reader) (result interface{}, err error) {
+	img, _, err := image.Decode(reader)
+	if err != nil {
+		return
+	}
+	qrCodes, err := goqr.Recognize(img)
+	if err != nil {
+		return
+	}
+	buff := &bytes.Buffer{}
+	for _, qrCode := range qrCodes {
+		buff.Write(qrCode.Payload)
+	}
+
+	result, err = ce.UnmarshalCBE(reader, result, nil)
+	return
+}
+
+func encodeQRT(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
+	buff := &bytes.Buffer{}
+	if err = ce.MarshalCBE(value, buff, nil); err != nil {
+		return
+	}
+	q, err := qrcode.New(buff.Bytes(), qrcode.RecoveryLevel(config.errorCorrection))
+	if err != nil {
+		return
+	}
+	if config.invertText {
+		q.BorderSize = 0
+	}
+	art := q.ToString(config.invertText)
+	_, err = writer.Write([]byte(art))
 	return
 }
 

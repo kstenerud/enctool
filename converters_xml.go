@@ -79,11 +79,11 @@ func XMLToCE(in io.Reader, encoder events.DataEventReceiver) error {
 		case xml.StartElement:
 			encoder.OnNode()
 			encoder.OnMap()
-			encoder.OnStringlikeArray(events.ArrayTypeString, "tag")
+			encoder.OnStringlikeArray(events.ArrayTypeString, "t")
 			tag := getMarkupNameBytes(elem.Name)
 			encoder.OnArray(events.ArrayTypeString, uint64(len(tag)), tag)
 			if len(elem.Attr) > 0 {
-				encoder.OnStringlikeArray(events.ArrayTypeString, "attributes")
+				encoder.OnStringlikeArray(events.ArrayTypeString, "a")
 				encoder.OnMap()
 				for _, v := range elem.Attr {
 					b := getMarkupNameBytes(v.Name)
