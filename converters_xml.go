@@ -341,6 +341,14 @@ func (_this *XMLEventReceiver) OnMap() {
 	panic(fmt.Errorf("cannot convert map to XML"))
 }
 
+func (_this *XMLEventReceiver) OnStructTemplate([]byte) {
+	panic(fmt.Errorf("cannot convert struct to XML"))
+}
+
+func (_this *XMLEventReceiver) OnStructInstance([]byte) {
+	panic(fmt.Errorf("cannot convert struct to XML"))
+}
+
 func (_this *XMLEventReceiver) OnNode() {
 	panic("TODO: Convert to XML")
 }
