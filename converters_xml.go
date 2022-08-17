@@ -6,7 +6,6 @@ import (
 	"io"
 	"math/big"
 	"strings"
-	"time"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/cte"
@@ -193,10 +192,6 @@ func (_this *XMLEventReceiver) OnEnd() {
 	}
 }
 
-func (_this *XMLEventReceiver) stackMarkup(name string) {
-	_this.stack = append(_this.stack, name)
-}
-
 func (_this *XMLEventReceiver) getCurrentMarkupName() string {
 	return _this.stack[len(_this.stack)-1]
 }
@@ -219,7 +214,7 @@ func (_this *XMLEventReceiver) OnVersion(uint64) {
 	_this.stage = MarkupStageNonMarkup
 }
 
-func (_this *XMLEventReceiver) OnPadding(int) {}
+func (_this *XMLEventReceiver) OnPadding() {}
 
 func (_this *XMLEventReceiver) OnNA() {
 	panic("Cannot convert NA type to xml")
@@ -229,7 +224,7 @@ func (_this *XMLEventReceiver) OnNull() {
 	_this.OnStringlikeArray(events.ArrayTypeString, "null")
 }
 
-func (_this *XMLEventReceiver) OnBool(v bool) {
+func (_this *XMLEventReceiver) OnBoolean(v bool) {
 	if v {
 		_this.OnTrue()
 	} else {
@@ -296,11 +291,7 @@ func (_this *XMLEventReceiver) OnUID(v []byte) {
 
 }
 
-func (_this *XMLEventReceiver) OnTime(v time.Time) {
-	_this.OnStringlikeArray(events.ArrayTypeString, fmt.Sprintf("%v", v))
-}
-
-func (_this *XMLEventReceiver) OnCompactTime(v compact_time.Time) {
+func (_this *XMLEventReceiver) OnTime(v compact_time.Time) {
 	_this.OnStringlikeArray(events.ArrayTypeString, fmt.Sprintf("%v", v))
 }
 
@@ -341,32 +332,32 @@ func (_this *XMLEventReceiver) OnMap() {
 	panic(fmt.Errorf("cannot convert map to XML"))
 }
 
-func (_this *XMLEventReceiver) OnStructTemplate([]byte) {
-	panic(fmt.Errorf("cannot convert struct to XML"))
-}
-
-func (_this *XMLEventReceiver) OnStructInstance([]byte) {
-	panic(fmt.Errorf("cannot convert struct to XML"))
-}
-
 func (_this *XMLEventReceiver) OnNode() {
-	panic("TODO: Convert to XML")
+	panic("TODO: Convert node to XML")
 }
 
 func (_this *XMLEventReceiver) OnEdge() {
 	panic(fmt.Errorf("cannot convert edge to XML"))
 }
 
+func (_this *XMLEventReceiver) OnStructTemplate(id []byte) {
+	panic("TODO: Convert struct template to XML")
+}
+
+func (_this *XMLEventReceiver) OnStructInstance(id []byte) {
+	panic("TODO: Convert struct instance to XML")
+}
+
 func (_this *XMLEventReceiver) OnMarker([]byte) {
 	panic(fmt.Errorf("cannot convert marker to XML"))
 }
 
-func (_this *XMLEventReceiver) OnReference([]byte) {
-	panic(fmt.Errorf("cannot convert reference to XML"))
+func (_this *XMLEventReceiver) OnReferenceLocal([]byte) {
+	panic(fmt.Errorf("cannot convert local reference to XML"))
 }
 
-func (_this *XMLEventReceiver) OnRIDReference() {
-	panic(fmt.Errorf("cannot convert resource ID ref to XML"))
+func (_this *XMLEventReceiver) OnReferenceRemote() {
+	panic(fmt.Errorf("cannot convert remote reference to XML"))
 }
 
 func (_this *XMLEventReceiver) OnConstant(_ []byte) {
