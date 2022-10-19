@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/events"
 	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/version"
@@ -89,11 +89,11 @@ func XMLToCE(in io.Reader, encoder events.DataEventReceiver) error {
 					encoder.OnArray(events.ArrayTypeString, uint64(len(b)), b)
 					encoder.OnStringlikeArray(events.ArrayTypeString, v.Value)
 				}
-				encoder.OnEnd()
+				encoder.OnEndContainer()
 			}
-			encoder.OnEnd()
+			encoder.OnEndContainer()
 		case xml.EndElement:
-			encoder.OnEnd()
+			encoder.OnEndContainer()
 		case xml.CharData:
 			str := strings.TrimSpace(string(elem))
 			if len(str) > 0 {
@@ -137,14 +137,6 @@ func NewXMLEventReceiver(out io.Writer, indentSpaces int) *XMLEventReceiver {
 	return rcv
 }
 
-// TODO: Convert ({"tag"="xyz" "attributes"={}}) to XML
-
-// func (_this *XMLEventReceiver) OnMarkup(name []byte) {
-// 	_this.stackMarkup(string(name))
-// 	_this.attributes = _this.attributes[:0]
-// 	_this.stage = MarkupStageAttributeKey
-// }
-
 func (_this *XMLEventReceiver) OnComment(isMultiline bool, contents []byte) {
 	_this.encoder.EncodeToken(xml.Comment(string(contents)))
 }
@@ -172,7 +164,7 @@ func (_this *XMLEventReceiver) OnStringlikeArray(arrayType events.ArrayType, str
 	}
 }
 
-func (_this *XMLEventReceiver) OnEnd() {
+func (_this *XMLEventReceiver) OnEndContainer() {
 	switch _this.stage {
 	case MarkupStageAttributeKey:
 		name := _this.getCurrentMarkupName()
@@ -215,10 +207,6 @@ func (_this *XMLEventReceiver) OnVersion(uint64) {
 }
 
 func (_this *XMLEventReceiver) OnPadding() {}
-
-func (_this *XMLEventReceiver) OnNA() {
-	panic("Cannot convert NA type to xml")
-}
 
 func (_this *XMLEventReceiver) OnNull() {
 	_this.OnStringlikeArray(events.ArrayTypeString, "null")
@@ -304,11 +292,31 @@ func (_this *XMLEventReceiver) OnArray(arrayType events.ArrayType, elemCount uin
 	}
 }
 
+func (_this *XMLEventReceiver) OnMedia(mediaType string, data []byte) {
+	panic(fmt.Errorf("cannot convert media to XML"))
+}
+
+func (_this *XMLEventReceiver) OnCustomBinary(customType uint64, data []byte) {
+	panic(fmt.Errorf("cannot convert custom types to XML"))
+}
+
+func (_this *XMLEventReceiver) OnCustomText(customType uint64, data string) {
+	panic(fmt.Errorf("cannot convert custom types to XML"))
+}
+
 func (_this *XMLEventReceiver) OnArrayBegin(arrayType events.ArrayType) {
 	if arrayType != events.ArrayTypeResourceID && arrayType != events.ArrayTypeString {
 		panic(fmt.Errorf("cannot convert array type %v to XML", arrayType))
 	}
 	_this.clearStringBuffer()
+}
+
+func (_this *XMLEventReceiver) OnMediaBegin(mediaType string) {
+	panic(fmt.Errorf("cannot convert media to XML"))
+}
+
+func (_this *XMLEventReceiver) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
+	panic(fmt.Errorf("cannot convert custom types to XML"))
 }
 
 func (_this *XMLEventReceiver) OnArrayChunk(chunkSize uint64, moreChunksComing bool) {
