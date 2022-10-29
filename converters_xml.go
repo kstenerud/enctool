@@ -9,8 +9,8 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/version"
 
@@ -20,8 +20,8 @@ import (
 )
 
 func XMLToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	encoderOpts := options.DefaultCBEEncoderOptions()
-	rulesOpts := options.DefaultRuleOptions()
+	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
+	rulesOpts := configuration.DefaultRuleConfiguration()
 	encoder := cbe.NewEncoder(&encoderOpts)
 	rules := rules.NewRules(encoder, &rulesOpts)
 	encoder.PrepareToEncode(out)
@@ -30,8 +30,8 @@ func XMLToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
 }
 
 func XMLToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	encoderOpts := options.DefaultCTEEncoderOptions()
-	rulesOpts := options.DefaultRuleOptions()
+	encoderOpts := configuration.DefaultCTEEncoderConfiguration()
+	rulesOpts := configuration.DefaultRuleConfiguration()
 	encoder := cte.NewEncoder(&encoderOpts)
 	rules := rules.NewRules(encoder, &rulesOpts)
 	encoder.PrepareToEncode(out)

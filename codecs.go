@@ -33,7 +33,7 @@ import (
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	qrcode "github.com/kstenerud/go-qrcode"
 	"github.com/liyue201/goqr"
 )
@@ -118,7 +118,7 @@ func decodeCTE(reader io.Reader) (result interface{}, err error) {
 }
 
 func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	opts := options.DefaultCTEMarshalerOptions()
+	opts := configuration.DefaultCTEMarshalerConfiguration()
 	opts.Encoder.Indent = strings.Repeat(" ", config.indentSpaces)
 	err = ce.MarshalCTE(value, writer, &opts)
 	return
