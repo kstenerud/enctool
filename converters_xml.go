@@ -348,12 +348,12 @@ func (_this *XMLEventReceiver) OnEdge() {
 	panic(fmt.Errorf("cannot convert edge to XML"))
 }
 
-func (_this *XMLEventReceiver) OnStructTemplate(id []byte) {
-	panic("TODO: Convert struct template to XML")
+func (_this *XMLEventReceiver) OnRecordType(id []byte) {
+	panic("TODO: Convert record type to XML")
 }
 
-func (_this *XMLEventReceiver) OnStructInstance(id []byte) {
-	panic("TODO: Convert struct instance to XML")
+func (_this *XMLEventReceiver) OnRecord(id []byte) {
+	panic("TODO: Convert record to XML")
 }
 
 func (_this *XMLEventReceiver) OnMarker([]byte) {
