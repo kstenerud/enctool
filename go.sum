@@ -9,8 +9,8 @@ github.com/kstenerud/go-compact-float v1.6.1 h1:FhRID85bjfOSKrGkHEKgwSZTYPXoMxai
 github.com/kstenerud/go-compact-float v1.6.1/go.mod h1:86Q5GkzClM2g0hObQndeX90g5kKMhG7eptDFsVrubbk=
 github.com/kstenerud/go-compact-time v1.8.3 h1:VPhN2UwJsJjAHnHbGuqLibNF8e7PXG4nBFpZ3UkjsRg=
 github.com/kstenerud/go-compact-time v1.8.3/go.mod h1:wBgxWliL/ON5b1/EaefPqQ44u2UgTtiNiIvkmByYFFc=
-github.com/kstenerud/go-concise-encoding v0.0.0-20230715042449-9df206d26e8f h1:Mw5S0Jw1bgDae7K9JQtAIrrReQbBltjijkfrQchP09E=
-github.com/kstenerud/go-concise-encoding v0.0.0-20230715042449-9df206d26e8f/go.mod h1:LZBUwiTvoHP/44JM4L2YoYRDybsczq8YN5tGKI/NjxU=
+github.com/kstenerud/go-concise-encoding v0.0.0-20230924052243-3092efa804d2 h1:bdPQv3Rl/DMYECVhcwS1Ej5oMLJvVMOxlh05K3EcFc4=
+github.com/kstenerud/go-concise-encoding v0.0.0-20230924052243-3092efa804d2/go.mod h1:LZBUwiTvoHP/44JM4L2YoYRDybsczq8YN5tGKI/NjxU=
 github.com/kstenerud/go-describe v1.2.13/go.mod h1:+B7K/fXHhObqwmMhcUT0CPT68fR1SQ9XNmJ5E4ck2RI=
 github.com/kstenerud/go-describe v1.2.15 h1:EVa8A9rerri6NGih4Koleg1cadp4wtzSLom802jnMGY=
 github.com/kstenerud/go-describe v1.2.15/go.mod h1:+B7K/fXHhObqwmMhcUT0CPT68fR1SQ9XNmJ5E4ck2RI=

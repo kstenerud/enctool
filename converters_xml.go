@@ -20,20 +20,18 @@ import (
 )
 
 func XMLToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cbe.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
+	opts := configuration.New()
+	encoder := cbe.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
 	encoder.PrepareToEncode(out)
 
 	return XMLToCE(in, rules)
 }
 
 func XMLToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	encoderOpts := configuration.DefaultCTEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cte.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
+	opts := configuration.New()
+	encoder := cte.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
 	encoder.PrepareToEncode(out)
 
 	return XMLToCE(in, rules)

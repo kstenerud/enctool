@@ -27,7 +27,6 @@ import (
 	"fmt"
 	"image"
 	"io"
-	"io/ioutil"
 	"reflect"
 	"sort"
 	"strings"
@@ -103,24 +102,24 @@ type decoder func(io.Reader) (interface{}, error)
 type encoder func(interface{}, io.Writer, *encoderConfig) error
 
 func decodeCBE(reader io.Reader) (result interface{}, err error) {
-	result, err = ce.UnmarshalCBE(reader, result, nil)
+	result, err = ce.UnmarshalCBE(reader, result, configuration.New())
 	return
 }
 
 func encodeCBE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	err = ce.MarshalCBE(value, writer, nil)
+	err = ce.MarshalCBE(value, writer, configuration.New())
 	return
 }
 
 func decodeCTE(reader io.Reader) (result interface{}, err error) {
-	result, err = ce.UnmarshalCTE(reader, result, nil)
+	result, err = ce.UnmarshalCTE(reader, result, configuration.New())
 	return
 }
 
 func encodeCTE(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
-	opts := configuration.DefaultCTEMarshalerConfiguration()
-	opts.Encoder.Indent = strings.Repeat(" ", config.indentSpaces)
-	err = ce.MarshalCTE(value, writer, &opts)
+	opts := configuration.New()
+	opts.Encoder.CTE.Indent = strings.Repeat(" ", config.indentSpaces)
+	err = ce.MarshalCTE(value, writer, opts)
 	return
 }
 
@@ -138,13 +137,13 @@ func decodeQR(reader io.Reader) (result interface{}, err error) {
 		buff.Write(qrCode.Payload)
 	}
 
-	result, err = ce.UnmarshalCBE(reader, result, nil)
+	result, err = ce.UnmarshalCBE(reader, result, configuration.New())
 	return
 }
 
 func encodeQR(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	buff := &bytes.Buffer{}
-	if err = ce.MarshalCBE(value, buff, nil); err != nil {
+	if err = ce.MarshalCBE(value, buff, configuration.New()); err != nil {
 		return
 	}
 	q, err := qrcode.New(buff.Bytes(), qrcode.RecoveryLevel(config.errorCorrection))
@@ -175,13 +174,13 @@ func decodeQRT(reader io.Reader) (result interface{}, err error) {
 		buff.Write(qrCode.Payload)
 	}
 
-	result, err = ce.UnmarshalCBE(reader, result, nil)
+	result, err = ce.UnmarshalCBE(reader, result, configuration.New())
 	return
 }
 
 func encodeQRT(value interface{}, writer io.Writer, config *encoderConfig) (err error) {
 	buff := &bytes.Buffer{}
-	if err = ce.MarshalCBE(value, buff, nil); err != nil {
+	if err = ce.MarshalCBE(value, buff, configuration.New()); err != nil {
 		return
 	}
 	q, err := qrcode.New(buff.Bytes(), qrcode.RecoveryLevel(config.errorCorrection))
@@ -197,7 +196,7 @@ func encodeQRT(value interface{}, writer io.Writer, config *encoderConfig) (err 
 }
 
 func decodeJSON(reader io.Reader) (result interface{}, err error) {
-	document, err := ioutil.ReadAll(reader)
+	document, err := io.ReadAll(reader)
 	if err != nil {
 		return
 	}
@@ -247,7 +246,7 @@ func coerceToJSONable(value interface{}) interface{} {
 }
 
 func decodeXML(reader io.Reader) (result interface{}, err error) {
-	document, err := ioutil.ReadAll(reader)
+	document, err := io.ReadAll(reader)
 	if err != nil {
 		return
 	}

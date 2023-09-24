@@ -47,57 +47,47 @@ func getConverter(id string) (converter, error) {
 }
 
 func CBEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cbe.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cbe.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cbe.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cbe.NewDecoder(opts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(in, rules)
 }
 
 func CBEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCTEEncoderConfiguration()
-	encoderOpts.Indent = generateSpaces(config.indentSpaces)
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cte.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cbe.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	opts.Encoder.CTE.Indent = generateSpaces(config.indentSpaces)
+	encoder := cte.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cbe.NewDecoder(opts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(in, rules)
 }
 
 func CTEToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCTEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cte.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cte.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cte.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cte.NewDecoder(opts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(in, rules)
 }
 
 func CTEToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cbe.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cte.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cbe.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cte.NewDecoder(opts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(in, rules)
 }
 
 func CBEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cbe.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cbe.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cbe.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cbe.NewDecoder(opts)
 
 	buff := &bytes.Buffer{}
 	encoder.PrepareToEncode(buff)
@@ -121,12 +111,10 @@ func CBEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
 }
 
 func CTEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cbe.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cte.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cbe.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cte.NewDecoder(opts)
 
 	buff := &bytes.Buffer{}
 	encoder.PrepareToEncode(buff)
@@ -150,12 +138,10 @@ func CTEToQR(in io.Reader, out io.Writer, config *encoderConfig) error {
 }
 
 func CTEToQRT(in io.Reader, out io.Writer, config *encoderConfig) error {
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cbe.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cte.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cbe.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cte.NewDecoder(opts)
 
 	buff := &bytes.Buffer{}
 	encoder.PrepareToEncode(buff)
@@ -190,12 +176,10 @@ func QRToCTE(in io.Reader, out io.Writer, config *encoderConfig) error {
 		buff.Write(qrCode.Payload)
 	}
 
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCTEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cte.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cbe.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cte.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cbe.NewDecoder(opts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(buff, rules)
 }
@@ -214,12 +198,10 @@ func QRToCBE(in io.Reader, out io.Writer, config *encoderConfig) error {
 		buff.Write(qrCode.Payload)
 	}
 
-	decoderOpts := configuration.DefaultCEDecoderConfiguration()
-	encoderOpts := configuration.DefaultCBEEncoderConfiguration()
-	rulesOpts := configuration.DefaultRuleConfiguration()
-	encoder := cbe.NewEncoder(&encoderOpts)
-	rules := rules.NewRules(encoder, &rulesOpts)
-	decoder := cbe.NewDecoder(&decoderOpts)
+	opts := configuration.New()
+	encoder := cbe.NewEncoder(opts)
+	rules := rules.NewRules(encoder, opts)
+	decoder := cbe.NewDecoder(opts)
 	encoder.PrepareToEncode(out)
 	return decoder.Decode(buff, rules)
 }
